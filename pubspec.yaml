@@ -1,12 +1,12 @@
-name: 'azure_devops'
-version: 2.5.0+62
-description: 'Azure DevOps unofficial mobile app'
-homepage: 'homepage'
-publish_to: 'none'
+name: "azure_devops"
+version: 2.5.0+64
+description: "Azure DevOps unofficial mobile app"
+homepage: "homepage"
+publish_to: "none"
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
-  flutter: '>=3.10.0'
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter: { sdk: flutter }
@@ -39,9 +39,9 @@ dependencies:
       url: https://github.com/PurpleSoftSrl/msal-flutter
   xml: ^6.3.0
   purple_theme:
-   git:
-    url: https://github.com/PurpleSoftSrl/flutter_theme_manager
-    ref: main
+    git:
+      url: https://github.com/PurpleSoftSrl/flutter_theme_manager
+      ref: main
 
 dev_dependencies:
   flutter_test: { sdk: flutter }
@@ -50,7 +50,6 @@ dev_dependencies:
     git:
       url: https://github.com/PurpleSoftSrl/flutter_lints
       ref: main
-
 
 flutter:
   uses-material-design: true
@@ -67,10 +66,9 @@ flutter:
       fonts:
         - asset: assets/fonts/DevOpsIcons.ttf
 
-
 flutter_icons:
   android: true
-  ios: true 
+  ios: true
   image_path: "assets/app_icon/app_icon_ios.png"
   adaptive_icon_background: "#201F1E"
   adaptive_icon_foreground: "assets/app_icon/app_icon_android.png"

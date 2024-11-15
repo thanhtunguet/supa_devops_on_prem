@@ -39,7 +39,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCx22kOaowOw4Os74YkiR300sk_RdJDL64',
-    appId: '1:826136080579:android:4400408597fe8dbdcfb276',
+    appId: '1:826136080579:android:b77706cf4f1a9b0ccfb276',
     messagingSenderId: '826136080579',
     projectId: 'truesight-cloud-apps',
     storageBucket: 'truesight-cloud-apps.firebasestorage.app',

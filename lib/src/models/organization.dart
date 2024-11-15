@@ -9,24 +9,28 @@ class GetOrganizationsResponse {
     required this.organizations,
   });
 
-  factory GetOrganizationsResponse.fromJson(dynamic json) {
-    if (json is List<dynamic>) {
-      return GetOrganizationsResponse(
-        count: json.length,
-        organizations: List<Organization>.from(
-          json.map((x) => Organization.fromJson(x as Map<String, dynamic>)),
-        ),
-      );
-    }
+  factory GetOrganizationsResponse.fromJson(Map<String, dynamic> json) {
     return GetOrganizationsResponse(
-      count: 0,
-      organizations: [],
+      count: json['count'] as int,
+      organizations: List<Organization>.from(
+        (json['value'] as List<dynamic>).map((dynamic json) {
+          if (json is Map<String, dynamic>) {
+            return Organization.fromJson(json);
+          }
+          return Organization(
+            accountId: 'DefaultCollection',
+            accountUri: 'DefaultCollection',
+            accountName: 'DefaultCollection',
+            properties: {},
+          );
+        }),
+      ),
     );
   }
 
   static List<Organization> fromResponse(Response res) =>
       GetOrganizationsResponse.fromJson(
-        jsonDecode(res.body),
+        jsonDecode(res.body) as Map<String, dynamic>,
       ).organizations ??
       [];
 
@@ -43,10 +47,12 @@ class Organization {
   });
 
   factory Organization.fromJson(Map<String, dynamic> json) => Organization(
-        accountId: json['accountId'] as String?,
-        accountUri: json['accountUri'] as String?,
-        accountName: json['accountName'] as String?,
-        properties: json['properties'] as Map<String, dynamic>,
+        accountId: json['id'] as String?,
+        accountUri: json['url'] as String?,
+        accountName: json['name'] as String?,
+        properties: {
+          'avatarUrl': json['avatarUrl'] as String?,
+        },
       );
 
   final String? accountId;

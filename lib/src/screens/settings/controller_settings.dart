@@ -25,8 +25,8 @@ class _SettingsController with ShareMixin, AppLogger {
 
   void shareApp() {
     final appUrl = Platform.isAndroid
-        ? 'https://play.google.com/store/apps/details?id=io.purplesoft.azuredevops'
-        : 'https://apps.apple.com/app/apple-store/id1666994628?pt=120276127&ct=app&mt=8';
+        ? 'https://play.google.com/store/apps/details?id=vn.supa.devops'
+        : 'https://apps.apple.com/app/apple-store/id6738258252';
 
     shareUrl(appUrl);
   }
@@ -79,7 +79,9 @@ class _SettingsController with ShareMixin, AppLogger {
     unawaited(AppRouter.goToSplash());
   }
 
-  Future<Organization?> _selectOrganization(List<Organization> organizations) async {
+  Future<Organization?> _selectOrganization(
+    List<Organization> organizations,
+  ) async {
     final currentOrg = storageService.getOrganization();
 
     Organization? selectedOrg;
@@ -98,7 +100,9 @@ class _SettingsController with ShareMixin, AppLogger {
                     selectedOrg = org;
                     AppRouter.popRoute();
                   },
-                  text: org.accountName == currentOrg ? '${org.accountName!} (current)' : org.accountName!,
+                  text: org.accountName == currentOrg
+                      ? '${org.accountName!} (current)'
+                      : org.accountName!,
                 ),
               ),
             )
@@ -122,7 +126,8 @@ class _SettingsController with ShareMixin, AppLogger {
         child: MarkdownBody(
           data: str,
           shrinkWrap: false,
-          styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(p: context.textTheme.titleSmall),
+          styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+              .copyWith(p: context.textTheme.titleSmall),
           paddingBuilders: {
             'h2': _H2PaddingBuilder(),
           },

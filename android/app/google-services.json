@@ -43,6 +43,42 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:826136080579:android:b77706cf4f1a9b0ccfb276",
+        "android_client_info": {
+          "package_name": "vn.com.goldsunfocusmedia.focus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "826136080579-jclo6qmqt7qanbfes0t4rcun4gismhqt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx22kOaowOw4Os74YkiR300sk_RdJDL64"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "826136080579-814lu0vp3r70upg1hkkek69lq77s4nef.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "826136080579-1rd0aai7j3l821pfga79c174g41i85n1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.chaugiang9.manup"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:826136080579:android:dd9f186faf4f0094cfb276",
         "android_client_info": {
           "package_name": "vn.supa.manup"

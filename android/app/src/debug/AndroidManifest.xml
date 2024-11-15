@@ -1,16 +1,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.purplesoft.azuredevops">
+    package="vn.com.goldsunfocusmedia.focus">
     <!-- The INTERNET permission is required for development. Specifically,
          the Flutter tool needs it to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:label="Az DevOps"
-        android:name="${applicationName}"
+        android:name=".MainApplication"
         android:icon="@mipmap/ic_launcher">
+
         <activity
-            android:name=".MainActivity"
+            android:name="vn.com.goldsunfocusmedia.focus.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
@@ -31,14 +33,17 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.microsoft.identity.client.BrowserTabActivity" android:launchMode="singleTask">
+        <activity
+            android:name="com.microsoft.identity.client.BrowserTabActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data 
          			android:host="io.purplesoft.azuredevops"
-         			android:path="${msalDebugPath}"
+                    android:path="/"
          			android:scheme="msauth" />
             </intent-filter>
         </activity>
