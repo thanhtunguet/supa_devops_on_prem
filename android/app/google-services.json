@@ -1,46 +1,150 @@
 {
-    "project_info": {
-        "project_number": "project_number",
-        "project_id": "project_id",
-        "storage_bucket": "storage_bucket"
-    },
-    "client": [
-        {
-            "client_info": {
-                "mobilesdk_app_id": "mobilesdk_app_id",
-                "android_client_info": {
-                    "package_name": "io.purplesoft.azuredevops"
-                }
-            },
-            "oauth_client": [
-                {
-                    "client_id": "client_id",
-                    "client_type": 3
-                }
-            ],
-            "api_key": [
-                {
-                    "current_key": "current_key"
-                }
-            ],
-            "services": {
-                "appinvite_service": {
-                    "other_platform_oauth_client": [
-                        {
-                            "client_id": "client_id",
-                            "client_type": 3
-                        },
-                        {
-                            "client_id": "client_id",
-                            "client_type": 2,
-                            "ios_info": {
-                                "bundle_id": "bundle_id"
-                            }
-                        }
-                    ]
-                }
-            }
+  "project_info": {
+    "project_number": "826136080579",
+    "project_id": "truesight-cloud-apps",
+    "storage_bucket": "truesight-cloud-apps.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826136080579:android:4400408597fe8dbdcfb276",
+        "android_client_info": {
+          "package_name": "io.purplesoft.azuredevops"
         }
-    ],
-    "configuration_version": "1"
+      },
+      "oauth_client": [
+        {
+          "client_id": "826136080579-jclo6qmqt7qanbfes0t4rcun4gismhqt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx22kOaowOw4Os74YkiR300sk_RdJDL64"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "826136080579-814lu0vp3r70upg1hkkek69lq77s4nef.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "826136080579-1rd0aai7j3l821pfga79c174g41i85n1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.chaugiang9.manup"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826136080579:android:dd9f186faf4f0094cfb276",
+        "android_client_info": {
+          "package_name": "vn.supa.manup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "826136080579-57cdo0aup2djdr8i5u3n30mdcjhhi2sk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "vn.supa.manup",
+            "certificate_hash": "84ccaf678f4b0c0a0c41f1856a559aab7e03a069"
+          }
+        },
+        {
+          "client_id": "826136080579-c72drjuplv5i5albpnpof0imecc44ol4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "vn.supa.manup",
+            "certificate_hash": "f4887c60556f950f4f19ad54eae5aa4e4f72415f"
+          }
+        },
+        {
+          "client_id": "826136080579-jclo6qmqt7qanbfes0t4rcun4gismhqt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx22kOaowOw4Os74YkiR300sk_RdJDL64"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "826136080579-814lu0vp3r70upg1hkkek69lq77s4nef.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "826136080579-1rd0aai7j3l821pfga79c174g41i85n1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.chaugiang9.manup"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826136080579:android:846f14f42c4b772bcfb276",
+        "android_client_info": {
+          "package_name": "vn.supa.spend"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "826136080579-8ekvirmmggauet9suap475gm41c3uaon.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "vn.supa.spend",
+            "certificate_hash": "f4887c60556f950f4f19ad54eae5aa4e4f72415f"
+          }
+        },
+        {
+          "client_id": "826136080579-lvg6l22ub4rv6c9n99ffnurohtr8nept.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "vn.supa.spend",
+            "certificate_hash": "84ccaf678f4b0c0a0c41f1856a559aab7e03a069"
+          }
+        },
+        {
+          "client_id": "826136080579-jclo6qmqt7qanbfes0t4rcun4gismhqt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx22kOaowOw4Os74YkiR300sk_RdJDL64"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "826136080579-814lu0vp3r70upg1hkkek69lq77s4nef.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "826136080579-1rd0aai7j3l821pfga79c174g41i85n1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.chaugiang9.manup"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
 }

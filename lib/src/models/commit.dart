@@ -11,10 +11,13 @@ class GetCommitsResponse {
   GetCommitsResponse({required this.commits});
 
   factory GetCommitsResponse.fromJson(Map<String, dynamic> source) =>
-      GetCommitsResponse(commits: Commit.listFromJson(json.decode(jsonEncode(source['value'])))!);
+      GetCommitsResponse(
+        commits: Commit.listFromJson(json.decode(jsonEncode(source['value'])))!,
+      );
 
   static List<Commit> fromResponse(Response res) =>
-      GetCommitsResponse.fromJson(jsonDecode(res.body) as Map<String, dynamic>).commits;
+      GetCommitsResponse.fromJson(jsonDecode(res.body) as Map<String, dynamic>)
+          .commits;
 
   final List<Commit> commits;
 
@@ -51,18 +54,24 @@ class Commit {
     this.parents,
   });
 
-  factory Commit.fromResponse(Response res) => Commit.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+  factory Commit.fromResponse(Response res) =>
+      Commit.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
 
   factory Commit.fromJson(Map<String, dynamic> json) => Commit(
         commitId: json['commitId'] as String?,
         author: Author.fromJson(json['author'] as Map<String, dynamic>),
         committer: Author.fromJson(json['committer'] as Map<String, dynamic>),
         comment: json['comment'] as String?,
-        changeCounts:
-            json['changeCounts'] == null ? null : _ChangeCounts.fromJson(json['changeCounts'] as Map<String, dynamic>),
+        changeCounts: json['changeCounts'] == null
+            ? null
+            : _ChangeCounts.fromJson(
+                json['changeCounts'] as Map<String, dynamic>,
+              ),
         url: json['url'] as String?,
         remoteUrl: json['remoteUrl'] as String?,
-        parents: json['parents'] == null ? null : List<String>.from(json['parents'] as List<dynamic>),
+        parents: json['parents'] == null
+            ? null
+            : List<String>.from(json['parents'] as List<dynamic>),
       );
 
   final String? commitId;
@@ -78,12 +87,15 @@ class Commit {
   static Commit empty() {
     return Commit(
       author: Author(),
-      remoteUrl: 'https://dev.azure.com/TestOrg/TestProject/_git/TestRepo/commit/testCommitId',
+      remoteUrl:
+          'https://devops.supa.vn:7443/TestOrg/TestProject/_git/TestRepo/commit/testCommitId',
     );
   }
 
   Commit copyWithDateAndAuthorName(DateTime newDate, String newAuthorName) {
-    return copyWith(author: author!.copyWith(date: newDate, name: newAuthorName));
+    return copyWith(
+      author: author!.copyWith(date: newDate, name: newAuthorName),
+    );
   }
 
   static List<Commit>? listFromJson(
@@ -162,7 +174,9 @@ class Author {
   factory Author.fromJson(Map<String, dynamic> json) => Author(
         name: json['name'] as String?,
         email: json['email'] as String?,
-        date: json['date'] == null ? null : DateTime.parse(json['date'].toString()).toLocal(),
+        date: json['date'] == null
+            ? null
+            : DateTime.parse(json['date'].toString()).toLocal(),
         imageUrl: json['imageUrl'] as String?,
       );
 

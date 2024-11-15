@@ -9,17 +9,26 @@ class GetOrganizationsResponse {
     required this.organizations,
   });
 
-  factory GetOrganizationsResponse.fromJson(Map<String, dynamic> json) => GetOrganizationsResponse(
-        count: json['count'] as int?,
-        organizations: json['value'] == null
-            ? []
-            : List<Organization>.from(
-                (json['value'] as List<dynamic>).map((x) => Organization.fromJson(x as Map<String, dynamic>)),
-              ),
+  factory GetOrganizationsResponse.fromJson(dynamic json) {
+    if (json is List<dynamic>) {
+      return GetOrganizationsResponse(
+        count: json.length,
+        organizations: List<Organization>.from(
+          json.map((x) => Organization.fromJson(x as Map<String, dynamic>)),
+        ),
       );
+    }
+    return GetOrganizationsResponse(
+      count: 0,
+      organizations: [],
+    );
+  }
 
   static List<Organization> fromResponse(Response res) =>
-      GetOrganizationsResponse.fromJson(jsonDecode(res.body) as Map<String, dynamic>).organizations ?? [];
+      GetOrganizationsResponse.fromJson(
+        jsonDecode(res.body),
+      ).organizations ??
+      [];
 
   final int? count;
   final List<Organization>? organizations;
@@ -63,6 +72,9 @@ class Organization {
 
   @override
   int get hashCode {
-    return accountId.hashCode ^ accountUri.hashCode ^ accountName.hashCode ^ properties.hashCode;
+    return accountId.hashCode ^
+        accountUri.hashCode ^
+        accountName.hashCode ^
+        properties.hashCode;
   }
 }

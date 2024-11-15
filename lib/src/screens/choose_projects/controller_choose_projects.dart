@@ -1,7 +1,11 @@
 part of choose_projects;
 
 class _ChooseProjectsController {
-  _ChooseProjectsController._(this.apiService, this.removeRoutes, this.storageService);
+  _ChooseProjectsController._(
+    this.apiService,
+    this.removeRoutes,
+    this.storageService,
+  );
 
   final AzureApiService apiService;
   final bool removeRoutes;
@@ -29,27 +33,34 @@ class _ChooseProjectsController {
     final projectsRes = await apiService.getProjects();
     final projects = projectsRes.data ?? <Project>[];
 
-    alreadyChosenProjects =
-        storageService.getChosenProjects().where((p) => projects.map((p1) => p1.id!).contains(p.id));
+    alreadyChosenProjects = storageService
+        .getChosenProjects()
+        .where((p) => projects.map((p1) => p1.id!).contains(p.id));
 
     // sort projects by last change date, already chosen projects go first.
     if (alreadyChosenProjects.isNotEmpty) {
       allProjects
         ..addAll(
-          alreadyChosenProjects.toList()..sort((a, b) => b.lastUpdateTime!.compareTo(a.lastUpdateTime!)),
+          alreadyChosenProjects.toList()
+            ..sort((a, b) => b.lastUpdateTime!.compareTo(a.lastUpdateTime!)),
         )
         ..addAll(
           projects.where((p) => !alreadyChosenProjects.contains(p)).toList()
             ..sort((a, b) => b.lastUpdateTime!.compareTo(a.lastUpdateTime!)),
         );
     } else {
-      allProjects.addAll(projects..sort((a, b) => b.lastUpdateTime!.compareTo(a.lastUpdateTime!)));
+      allProjects.addAll(
+        projects
+          ..sort((a, b) => b.lastUpdateTime!.compareTo(a.lastUpdateTime!)),
+      );
       chooseAllVisible.value = true;
     }
 
     chosenProjects.value = ApiResponse(
       isError: projectsRes.isError,
-      data: (alreadyChosenProjects.isNotEmpty ? alreadyChosenProjects : projects).toList(),
+      data:
+          (alreadyChosenProjects.isNotEmpty ? alreadyChosenProjects : projects)
+              .toList(),
       errorResponse: projectsRes.errorResponse,
     );
 
@@ -58,7 +69,9 @@ class _ChooseProjectsController {
   }
 
   void toggleChooseAll() {
-    chosenProjects.value = ApiResponse.ok(chooseAllVisible.value ? [] : [...visibleProjects.value]);
+    chosenProjects.value = ApiResponse.ok(
+      chooseAllVisible.value ? [] : [...visibleProjects.value],
+    );
 
     chooseAllVisible.value = !chooseAllVisible.value;
   }
@@ -82,13 +95,15 @@ class _ChooseProjectsController {
     }
 
     apiService.setChosenProjects(
-      chosenProjects.value!.data!..sort((a, b) => b.lastUpdateTime!.compareTo(a.lastUpdateTime!)),
+      chosenProjects.value!.data!
+        ..sort((a, b) => b.lastUpdateTime!.compareTo(a.lastUpdateTime!)),
     );
 
     if (removeRoutes) {
       unawaited(AppRouter.goToTabs());
     } else {
-      final hasChangedProjects = _initiallyChosenProjects != chosenProjects.value!.data!;
+      final hasChangedProjects =
+          _initiallyChosenProjects != chosenProjects.value!.data!;
       if (hasChangedProjects) {
         // get new work item types to avoid errors in work items creation
         unawaited(apiService.getWorkItemTypes(force: true));
@@ -103,7 +118,8 @@ class _ChooseProjectsController {
     if (orgsRes.isError) {
       return OverlayService.error(
         'Error trying to get your organizations',
-        description: "Check that your token has 'All accessible organizations' option enabled",
+        description:
+            "Check that your token has 'All accessible organizations' option enabled",
       );
     }
 
@@ -112,7 +128,8 @@ class _ChooseProjectsController {
     if (orgs.isEmpty) {
       return OverlayService.error(
         'No organizations found for your account',
-        description: "Check that your token has 'All accessible organizations' option enabled",
+        description:
+            "Check that your token has 'All accessible organizations' option enabled",
       );
     }
 
@@ -157,7 +174,9 @@ class _ChooseProjectsController {
   }
 
   void setVisibleProjects(String filterName) {
-    visibleProjects.value = allProjects.where((p) => p.name!.toLowerCase().contains(filterName.toLowerCase())).toList();
+    visibleProjects.value = allProjects
+        .where((p) => p.name!.toLowerCase().contains(filterName.toLowerCase()))
+        .toList();
   }
 
   void resetSearch() {

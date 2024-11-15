@@ -1,6 +1,7 @@
 part of pull_request_detail;
 
-class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper {
+class _PullRequestDetailController
+    with ShareMixin, AppLogger, PullRequestHelper {
   _PullRequestDetailController._(this.args, this.apiService);
 
   final PullRequestDetailArgs args;
@@ -15,15 +16,19 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
   final groupedAddedFiles = <String, Set<ChangedFileDiff>>{};
   final groupedDeletedFiles = <String, Set<ChangedFileDiff>>{};
 
-  Iterable<ChangeEntry?> get changedFiles => prDetail.value?.data?.changes.expand((c) => c.changes) ?? [];
+  Iterable<ChangeEntry?> get changedFiles =>
+      prDetail.value?.data?.changes.expand((c) => c.changes) ?? [];
 
-  Iterable<ChangeEntry?> get addedFiles => changedFiles.where((f) => f!.changeType == 'add');
+  Iterable<ChangeEntry?> get addedFiles =>
+      changedFiles.where((f) => f!.changeType == 'add');
   int get addedFilesCount => addedFiles.length;
 
-  Iterable<ChangeEntry?> get editedFiles => changedFiles.where((f) => f!.changeType == 'edit');
+  Iterable<ChangeEntry?> get editedFiles =>
+      changedFiles.where((f) => f!.changeType == 'edit');
   int get editedFilesCount => editedFiles.length;
 
-  Iterable<ChangeEntry?> get deletedFiles => changedFiles.where((f) => f!.changeType == 'delete');
+  Iterable<ChangeEntry?> get deletedFiles =>
+      changedFiles.where((f) => f!.changeType == 'delete');
   int get deletedFilesCount => deletedFiles.length;
 
   final visiblePage = ValueNotifier<int>(0);
@@ -31,11 +36,17 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
   final groupedConflictingFiles = <String, Set<ChangedFileDiff>>{};
 
   bool get mustSatisfyPolicies =>
-      prDetail.value?.data?.policies.where((p) => p.status != 'approved').isNotEmpty ?? false;
+      prDetail.value?.data?.policies
+          .where((p) => p.status != 'approved')
+          .isNotEmpty ??
+      false;
 
-  bool get mustBeApproved => reviewers.where((p) => p.reviewer.isRequired && p.reviewer.vote < 5).isNotEmpty;
+  bool get mustBeApproved => reviewers
+      .where((p) => p.reviewer.isRequired && p.reviewer.vote < 5)
+      .isNotEmpty;
 
-  bool get hasAutoCompleteOn => prDetail.value?.data?.pr.autoCompleteSetBy != null;
+  bool get hasAutoCompleteOn =>
+      prDetail.value?.data?.pr.autoCompleteSetBy != null;
 
   bool canBeReactivated = true;
 
@@ -79,7 +90,10 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
       getIdentity: (mention) => apiService.getIdentityFromGuid(guid: mention),
     );
 
-    prDetail.value = res.copyWith(data: res.data?.copyWith(pr: prAndThreads.pr, updates: prAndThreads.updates));
+    prDetail.value = res.copyWith(
+      data: res.data
+          ?.copyWith(pr: prAndThreads.pr, updates: prAndThreads.updates),
+    );
   }
 
   void dispose() {
@@ -96,14 +110,20 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
         final fileName = basename(path);
 
         final newestCommitId = changes
-            .where((commit) => commit.changes.any((c) => c.item.path == path || c.originalPath == path))
+            .where(
+              (commit) => commit.changes
+                  .any((c) => c.item.path == path || c.originalPath == path),
+            )
             .reduce((a, b) => a.iteration.id >= b.iteration.id ? a : b)
             .iteration
             .sourceRefCommit
             .commitId;
 
         final oldestCommitId = changes
-            .where((commit) => commit.changes.any((c) => c.item.path == path || c.originalPath == path))
+            .where(
+              (commit) => commit.changes
+                  .any((c) => c.item.path == path || c.originalPath == path),
+            )
             .reduce((a, b) => a.iteration.id <= b.iteration.id ? a : b)
             .iteration
             .commonRefCommit
@@ -115,7 +135,12 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
           directory: directory,
           fileName: fileName,
           path: path,
-          changeType: switch (file.changeType) { 'add' => 'added', 'edit' => 'edited', 'delete' => 'deleted', _ => '' },
+          changeType: switch (file.changeType) {
+            'add' => 'added',
+            'edit' => 'edited',
+            'delete' => 'deleted',
+            _ => ''
+          },
         );
         if (file.changeType == 'add') {
           groupedAddedFiles.putIfAbsent(directory, () => {diff});
@@ -182,19 +207,25 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
     final project = pr.repository.project.name;
     final repository = pr.repository.name;
     final id = pr.pullRequestId;
-    final prWebUrl = '${apiService.basePath}/$project/_git/$repository/pullrequest/$id';
+    final prWebUrl =
+        '${apiService.basePath}/$project/_git/$repository/pullrequest/$id';
 
     shareUrl(prWebUrl);
   }
 
   void goToRepo() {
     AppRouter.goToRepositoryDetail(
-      RepoDetailArgs(projectName: args.project, repositoryName: prDetail.value!.data!.pr.repository.name),
+      RepoDetailArgs(
+        projectName: args.project,
+        repositoryName: prDetail.value!.data!.pr.repository.name,
+      ),
     );
   }
 
   void goToProject() {
-    AppRouter.goToProjectDetail(prDetail.value!.data!.pr.repository.project.name);
+    AppRouter.goToProjectDetail(
+      prDetail.value!.data!.pr.repository.project.name,
+    );
   }
 
   Future<String?> _getReviewerDescriptor(Reviewer r) async {
@@ -205,7 +236,11 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
   void goToCommitDetail(String commitId) {
     final projectName = prDetail.value!.data!.pr.repository.project.name;
     final repositoryName = prDetail.value!.data!.pr.repository.name;
-    AppRouter.goToCommitDetail(project: projectName, repository: repositoryName, commitId: commitId);
+    AppRouter.goToCommitDetail(
+      project: projectName,
+      repository: repositoryName,
+      commitId: commitId,
+    );
   }
 
   Future<void> onTapMarkdownLink(String text, String? href, String? _) async {
@@ -215,7 +250,9 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
       final parsedId = int.tryParse(id);
       if (parsedId == null) return;
 
-      unawaited(AppRouter.goToWorkItemDetail(project: args.project, id: parsedId));
+      unawaited(
+        AppRouter.goToWorkItemDetail(project: args.project, id: parsedId),
+      );
       return;
     }
 
@@ -228,12 +265,17 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
     bool isDeleted = false,
     String? filePath,
   }) async {
-    final commits = prDetail.value!.data!.updates.whereType<IterationUpdate>().expand((u) => u.commits);
+    final commits = prDetail.value!.data!.updates
+        .whereType<IterationUpdate>()
+        .expand((u) => u.commits);
     final latestCommit = commits.isEmpty ? null : commits.first;
-    final secondLatestCommit = commits.length < 2 ? null : commits.skip(1).first;
+    final secondLatestCommit =
+        commits.length < 2 ? null : commits.skip(1).first;
 
     final commitId = diff?.commitId ?? latestCommit?.commitId;
-    final parent = diff?.parentCommitId ?? latestCommit?.parents?.firstOrNull ?? secondLatestCommit?.commitId;
+    final parent = diff?.parentCommitId ??
+        latestCommit?.parents?.firstOrNull ??
+        secondLatestCommit?.commitId;
 
     final basePath = '${apiService.basePath}/${args.project}';
     final repository = args.repository;
@@ -298,7 +340,8 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
 
   Future<void> _votePr({required int vote}) async {
     final user = apiService.user!;
-    final reviewer = prDetail.value!.data!.pr.reviewers.firstWhereOrNull((r) => r.uniqueName == user.emailAddress) ??
+    final reviewer = prDetail.value!.data!.pr.reviewers
+            .firstWhereOrNull((r) => r.uniqueName == user.emailAddress) ??
         Reviewer(
           vote: vote,
           hasDeclined: false,
@@ -322,24 +365,37 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
     });
 
     if (res.isError) {
-      await OverlayService.error('Error', description: 'Pull request not edited');
+      await OverlayService.error(
+        'Error',
+        description: 'Pull request not edited',
+      );
       return;
     }
 
     await init();
   }
 
-  Future<void> _editPr({PullRequestStatus? status, bool? isDraft, bool? autocomplete}) async {
+  Future<void> _editPr({
+    PullRequestStatus? status,
+    bool? isDraft,
+    bool? autocomplete,
+  }) async {
     var confirmMessage = '';
     if (status != null) {
       confirmMessage = '${status.toVerb()} the pull request';
     } else if (isDraft != null) {
-      confirmMessage = isDraft ? 'mark the pull request as draft' : 'publish the pull request';
+      confirmMessage = isDraft
+          ? 'mark the pull request as draft'
+          : 'publish the pull request';
     } else if (autocomplete != null) {
-      confirmMessage = autocomplete ? 'set auto-complete' : 'cancel auto-complete';
+      confirmMessage =
+          autocomplete ? 'set auto-complete' : 'cancel auto-complete';
     }
 
-    final conf = await OverlayService.confirm('Attention', description: 'Do you really want to $confirmMessage?');
+    final conf = await OverlayService.confirm(
+      'Attention',
+      description: 'Do you really want to $confirmMessage?',
+    );
     if (!conf) return;
 
     PullRequestCompletionOptions? completionOptions;
@@ -355,7 +411,8 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
       id: args.id,
       status: status,
       isDraft: isDraft ?? prDetail.value!.data!.pr.isDraft,
-      commitId: prDetail.value!.data!.changes.first.iteration.sourceRefCommit.commitId,
+      commitId: prDetail
+          .value!.data!.changes.first.iteration.sourceRefCommit.commitId,
       autocomplete: autocomplete,
       completionOptions: completionOptions,
     );
@@ -368,7 +425,10 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
     });
 
     if (res.isError) {
-      await OverlayService.error('Error', description: 'Pull request not edited');
+      await OverlayService.error(
+        'Error',
+        description: 'Pull request not edited',
+      );
       return;
     }
 
@@ -390,11 +450,17 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
     var customizeCommitMessage = false;
     String? commitMessage;
 
-    final branchesRes = await apiService.getRepositoryBranches(projectName: args.project, repoName: args.repository);
-    final branch = (branchesRes.data ?? []).firstWhereOrNull((b) => b.name == prDetail.value!.data!.pr.sourceBranch);
+    final branchesRes = await apiService.getRepositoryBranches(
+      projectName: args.project,
+      repoName: args.repository,
+    );
+    final branch = (branchesRes.data ?? []).firstWhereOrNull(
+      (b) => b.name == prDetail.value!.data!.pr.sourceBranch,
+    );
     final canDeleteBranch = !(branch?.isBaseVersion ?? false);
 
-    final mergeTypeFieldController = TextEditingController(text: mergeTypes.entries.first.value);
+    final mergeTypeFieldController =
+        TextEditingController(text: mergeTypes.entries.first.value);
 
     var hasConfirmed = false;
 
@@ -446,7 +512,8 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
                     style: context.textTheme.bodySmall,
                   ),
                   value: completeWorkItems,
-                  onChanged: (_) => setState(() => completeWorkItems = !completeWorkItems),
+                  onChanged: (_) =>
+                      setState(() => completeWorkItems = !completeWorkItems),
                   contentPadding: EdgeInsets.zero,
                 ),
                 if (canDeleteBranch)
@@ -456,7 +523,9 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
                       style: context.textTheme.bodySmall,
                     ),
                     value: deleteSourceBranch,
-                    onChanged: (_) => setState(() => deleteSourceBranch = !deleteSourceBranch),
+                    onChanged: (_) => setState(
+                      () => deleteSourceBranch = !deleteSourceBranch,
+                    ),
                     contentPadding: EdgeInsets.zero,
                   ),
                 CheckboxListTile(
@@ -465,7 +534,9 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
                     style: context.textTheme.bodySmall,
                   ),
                   value: customizeCommitMessage,
-                  onChanged: (_) => setState(() => customizeCommitMessage = !customizeCommitMessage),
+                  onChanged: (_) => setState(
+                    () => customizeCommitMessage = !customizeCommitMessage,
+                  ),
                   contentPadding: EdgeInsets.zero,
                 ),
                 if (customizeCommitMessage)
@@ -502,7 +573,9 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
   void onHistoryVisibilityChanged(VisibilityInfo info) {
     if (info.visibleFraction > 0 && !showCommentField.value) {
       showCommentField.value = true;
-    } else if (!_isDisposed && info.visibleFraction == 0 && showCommentField.value) {
+    } else if (!_isDisposed &&
+        info.visibleFraction == 0 &&
+        showCommentField.value) {
       showCommentField.value = false;
     }
   }
@@ -621,7 +694,9 @@ class _PullRequestDetailController with ShareMixin, AppLogger, PullRequestHelper
       status: s,
     );
 
-    if (!(res.data ?? false)) return OverlayService.snackbar('Status not updated', isError: true);
+    if (!(res.data ?? false)) {
+      return OverlayService.snackbar('Status not updated', isError: true);
+    }
 
     await init();
   }

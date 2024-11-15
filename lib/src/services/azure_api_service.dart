@@ -27,7 +27,8 @@ import 'package:azure_devops/src/models/repository.dart';
 import 'package:azure_devops/src/models/repository_branches.dart';
 import 'package:azure_devops/src/models/repository_items.dart';
 import 'package:azure_devops/src/models/team.dart';
-import 'package:azure_devops/src/models/team_member.dart' show GetTeamMembersResponse;
+import 'package:azure_devops/src/models/team_member.dart'
+    show GetTeamMembersResponse;
 import 'package:azure_devops/src/models/timeline.dart';
 import 'package:azure_devops/src/models/user.dart';
 import 'package:azure_devops/src/models/user_entitlements.dart';
@@ -107,7 +108,9 @@ abstract class AzureApiService {
 
   Future<ApiResponse<List<WorkItem>>> getMyRecentWorkItems();
 
-  Future<ApiResponse<Map<String, List<WorkItemType>>>> getWorkItemTypes({bool force = false});
+  Future<ApiResponse<Map<String, List<WorkItemType>>>> getWorkItemTypes({
+    bool force = false,
+  });
 
   Future<ApiResponse<WorkItemFieldsWithRules>> getWorkItemTypeFields({
     required String projectName,
@@ -125,7 +128,9 @@ abstract class AzureApiService {
     required String fileName,
   });
 
-  Future<ApiResponse<List<WorkItemTag>>> getProjectTags({required String projectName});
+  Future<ApiResponse<List<WorkItemTag>>> getProjectTags({
+    required String projectName,
+  });
 
   Future<ApiResponse<WorkItem>> createWorkItem({
     required String projectName,
@@ -177,7 +182,11 @@ abstract class AzureApiService {
     required int workItemId,
   });
 
-  Future<ApiResponse<bool>> deleteWorkItem({required String projectName, required int id, required String type});
+  Future<ApiResponse<bool>> deleteWorkItem({
+    required String projectName,
+    required int id,
+    required String type,
+  });
 
   Future<ApiResponse<List<PullRequest>>> getPullRequests({
     required PullRequestStatus status,
@@ -186,9 +195,13 @@ abstract class AzureApiService {
     Set<GraphUser>? reviewers,
   });
 
-  Future<ApiResponse<List<GitRepository>>> getProjectRepositories({required String projectName});
+  Future<ApiResponse<List<GitRepository>>> getProjectRepositories({
+    required String projectName,
+  });
 
-  Future<ApiResponse<List<LanguageBreakdown>>> getProjectLanguages({required String projectName});
+  Future<ApiResponse<List<LanguageBreakdown>>> getProjectLanguages({
+    required String projectName,
+  });
 
   Future<ApiResponse<List<RepoItem>>> getRepositoryItems({
     required String projectName,
@@ -240,7 +253,10 @@ abstract class AzureApiService {
     Set<String>? triggeredBy,
   });
 
-  Future<ApiResponse<PipelineWithTimeline>> getPipeline({required String projectName, required int id});
+  Future<ApiResponse<PipelineWithTimeline>> getPipeline({
+    required String projectName,
+    required int id,
+  });
 
   Future<ApiResponse<String>> getPipelineTaskLogs({
     required String projectName,
@@ -248,7 +264,10 @@ abstract class AzureApiService {
     required int logId,
   });
 
-  Future<ApiResponse<Pipeline>> cancelPipeline({required int buildId, required String projectId});
+  Future<ApiResponse<Pipeline>> cancelPipeline({
+    required int buildId,
+    required String projectId,
+  });
 
   Future<ApiResponse<Pipeline>> rerunPipeline({
     required int definitionId,
@@ -258,13 +277,17 @@ abstract class AzureApiService {
 
   Future<ApiResponse<GraphUser>> getUserFromEmail({required String email});
 
-  Future<ApiResponse<GraphUser>> getUserFromDescriptor({required String descriptor});
+  Future<ApiResponse<GraphUser>> getUserFromDescriptor({
+    required String descriptor,
+  });
 
   Future<ApiResponse<GraphUser>> getUserFromDisplayName({required String name});
 
   Future<ApiResponse<String>> getUserToMention({required String email});
 
-  Future<ApiResponse<List<TeamWithMembers>>> getProjectTeams({required String projectId});
+  Future<ApiResponse<List<TeamWithMembers>>> getProjectTeams({
+    required String projectId,
+  });
 
   Future<ApiResponse<PullRequestWithDetails>> getPullRequest({
     required String projectName,
@@ -356,9 +379,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
   @override
   String get basePath => _basePath;
-  String get _basePath => 'https://dev.azure.com/$_organization';
+  String get _basePath => 'https://devops.supa.vn:7443/$_organization';
 
-  String get _usersBasePath => 'https://vssps.dev.azure.com';
+  String get _usersBasePath => 'https://devops.supa.vn:7443';
 
   String get _apiVersion => 'api-version=7.0';
 
@@ -375,7 +398,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   @override
   Map<String, String>? get headers => {
         'Content-Type': 'application/json',
-        'Authorization': _isJwt ? 'Bearer $_accessToken' : 'Basic ${base64.encode(utf8.encode(':$_accessToken'))}',
+        'Authorization': _isJwt
+            ? 'Bearer $_accessToken'
+            : 'Basic ${base64.encode(utf8.encode(':$_accessToken'))}',
       };
 
   List<Project> _projects = [];
@@ -388,7 +413,8 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   final Map<String, List<WorkItemType>> _workItemTypes = {};
 
   @override
-  Map<String, Map<String, List<WorkItemState>>> get workItemStates => _workItemStates;
+  Map<String, Map<String, List<WorkItemState>>> get workItemStates =>
+      _workItemStates;
   final Map<String, Map<String, List<WorkItemState>>> _workItemStates = {};
 
   final Map<String, Map<String, WorkItemFieldsWithRules>> _workItemFields = {};
@@ -398,7 +424,8 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   final Map<String, List<AreaOrIteration>> _workItemAreas = {};
 
   @override
-  Map<String, List<AreaOrIteration>> get workItemIterations => _workItemIterations;
+  Map<String, List<AreaOrIteration>> get workItemIterations =>
+      _workItemIterations;
   final Map<String, List<AreaOrIteration>> _workItemIterations = {};
 
   static const _fieldNamesToSkip = [
@@ -433,11 +460,21 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     return res;
   }
 
-  Future<Response> _patch(String url, {Map<String, Object>? body, String? contentType}) async {
+  Future<Response> _patch(
+    String url, {
+    Map<String, Object>? body,
+    String? contentType,
+  }) async {
     logDebug('PATCH $url');
 
-    final realHeaders = contentType != null ? ({...headers!, 'Content-Type': contentType}) : headers!;
-    Future<Response> req() => _client.patch(Uri.parse(url), headers: realHeaders, body: jsonEncode(body));
+    final realHeaders = contentType != null
+        ? ({...headers!, 'Content-Type': contentType})
+        : headers!;
+    Future<Response> req() => _client.patch(
+          Uri.parse(url),
+          headers: realHeaders,
+          body: jsonEncode(body),
+        );
     var res = await req();
     res = await _checkExpiredToken(res, req);
 
@@ -446,11 +483,21 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     return res;
   }
 
-  Future<Response> _patchList(String url, {List<Map<String, dynamic>>? body, String? contentType}) async {
+  Future<Response> _patchList(
+    String url, {
+    List<Map<String, dynamic>>? body,
+    String? contentType,
+  }) async {
     logDebug('PATCH $url');
 
-    final realHeaders = contentType != null ? ({...headers!, 'Content-Type': contentType}) : headers!;
-    Future<Response> req() => _client.patch(Uri.parse(url), headers: realHeaders, body: jsonEncode(body));
+    final realHeaders = contentType != null
+        ? ({...headers!, 'Content-Type': contentType})
+        : headers!;
+    Future<Response> req() => _client.patch(
+          Uri.parse(url),
+          headers: realHeaders,
+          body: jsonEncode(body),
+        );
     var res = await req();
     res = await _checkExpiredToken(res, req);
 
@@ -459,11 +506,22 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     return res;
   }
 
-  Future<Response> _post(String url, {Map<String, dynamic>? body, Object? bodyObject, String? contentType}) async {
+  Future<Response> _post(
+    String url, {
+    Map<String, dynamic>? body,
+    Object? bodyObject,
+    String? contentType,
+  }) async {
     logDebug('POST $url');
 
-    final realHeaders = contentType != null ? ({...headers!, 'Content-Type': contentType}) : headers!;
-    Future<Response> req() => _client.post(Uri.parse(url), headers: realHeaders, body: bodyObject ?? jsonEncode(body));
+    final realHeaders = contentType != null
+        ? ({...headers!, 'Content-Type': contentType})
+        : headers!;
+    Future<Response> req() => _client.post(
+          Uri.parse(url),
+          headers: realHeaders,
+          body: bodyObject ?? jsonEncode(body),
+        );
     var res = await req();
     res = await _checkExpiredToken(res, req);
 
@@ -472,11 +530,21 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     return res;
   }
 
-  Future<Response> _postList(String url, {List<Map<String, dynamic>>? body, String? contentType}) async {
+  Future<Response> _postList(
+    String url, {
+    List<Map<String, dynamic>>? body,
+    String? contentType,
+  }) async {
     logDebug('POST $url');
 
-    final realHeaders = contentType != null ? ({...headers!, 'Content-Type': contentType}) : headers!;
-    Future<Response> req() => _client.post(Uri.parse(url), headers: realHeaders, body: jsonEncode(body));
+    final realHeaders = contentType != null
+        ? ({...headers!, 'Content-Type': contentType})
+        : headers!;
+    Future<Response> req() => _client.post(
+          Uri.parse(url),
+          headers: realHeaders,
+          body: jsonEncode(body),
+        );
     var res = await req();
     res = await _checkExpiredToken(res, req);
 
@@ -488,7 +556,8 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   Future<Response> _put(String url, {Map<String, dynamic>? body}) async {
     logDebug('PUT $url');
 
-    Future<Response> req() => _client.put(Uri.parse(url), headers: headers, body: jsonEncode(body));
+    Future<Response> req() =>
+        _client.put(Uri.parse(url), headers: headers, body: jsonEncode(body));
     var res = await req();
     res = await _checkExpiredToken(res, req);
 
@@ -513,7 +582,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   static bool _isLoggingError = false;
 
   void _logApiCall(String url, String method, Response res, Object? body) {
-    logDebug('$method $url ${res.statusCode} ${res.reasonPhrase} ${res.isError ? '- res body: ${res.body}' : ''}');
+    logDebug(
+      '$method $url ${res.statusCode} ${res.reasonPhrase} ${res.isError ? '- res body: ${res.body}' : ''}',
+    );
 
     if (res.isError && _user != null && ![401, 403].contains(res.statusCode)) {
       if (_isLoggingError) return;
@@ -529,14 +600,20 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
           message: SentryMessage(
             title,
             template: 'Response body: %s, \n Request body: %s',
-            params: [if (res.body.isNotEmpty) res.body, if (body != null && body != '') body],
+            params: [
+              if (res.body.isNotEmpty) res.body,
+              if (body != null && body != '') body,
+            ],
           ),
         ),
       );
     }
   }
 
-  Future<Response> _checkExpiredToken(Response res, Future<Response> Function() req) async {
+  Future<Response> _checkExpiredToken(
+    Response res,
+    Future<Response> Function() req,
+  ) async {
     if (_isJwt && [203, 302].contains(res.statusCode)) {
       // refresh expired token
       final newToken = await MsalService().loginSilently();
@@ -562,18 +639,21 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
       final newToken = await MsalService().loginSilently();
       if (newToken != null) _accessToken = newToken;
     }
+    final profilePath =
+        '_api/_common/GetUserProfile?$_apiVersion-preview&__v=5';
 
-    var profileEndpoint = '$_usersBasePath/_apis/profile/profiles/me?$_apiVersion-preview';
+    var profileEndpoint = '$_usersBasePath/$profilePath';
 
     _organization = storageService.getOrganization();
 
     if (_organization.isNotEmpty) {
-      profileEndpoint = '$_usersBasePath/$_organization/_apis/profile/profiles/me?$_apiVersion-preview';
+      profileEndpoint = '$_usersBasePath/$_organization/$profilePath';
     }
 
     final accountsRes = await _get(profileEndpoint);
 
-    if ([HttpStatus.unauthorized, HttpStatus.nonAuthoritativeInformation].contains(accountsRes.statusCode)) {
+    if ([HttpStatus.unauthorized, HttpStatus.nonAuthoritativeInformation]
+        .contains(accountsRes.statusCode)) {
       _accessToken = oldToken;
       await setOrganization('');
       return LoginStatus.unauthorized;
@@ -587,7 +667,8 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
     storageService.setToken(accessToken);
 
-    final user = UserMe.fromJson(jsonDecode(accountsRes.body) as Map<String, dynamic>);
+    final user =
+        UserMe.fromJson(jsonDecode(accountsRes.body) as Map<String, dynamic>);
     _user = user;
 
     _organization = storageService.getOrganization();
@@ -628,11 +709,11 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
   @override
   Future<ApiResponse<List<Organization>>> getOrganizations() async {
-    final orgsRes =
-        await _get('https://app.vssps.visualstudio.com/_apis/accounts?memberId=${user!.publicAlias}&$_apiVersion');
+    final orgsRes = await _get(
+      'https://devops.supa.vn:7443/_apis/projectCollections?$_apiVersion',
+    );
 
     if (orgsRes.isError) return ApiResponse.error(orgsRes);
-
     return ApiResponse.ok(GetOrganizationsResponse.fromResponse(orgsRes));
   }
 
@@ -647,14 +728,17 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   Future<ApiResponse<List<Project>>> getProjects() async {
     _chosenProjects = storageService.getChosenProjects();
 
-    final projectsRes = await _get('$_basePath/_apis/projects?$_apiVersion&getDefaultTeamImageUrl=true');
+    final projectsRes = await _get(
+      '$_basePath/_apis/projects?$_apiVersion&getDefaultTeamImageUrl=true',
+    );
     if (projectsRes.isError) return ApiResponse.error(projectsRes);
 
     _projects = GetProjectsResponse.fromResponse(projectsRes);
 
     // check if user is authorized to get images. This is done to avoid throwing many exceptions
     if (_projects.isNotEmpty) {
-      final url = _projects.firstWhereOrNull((p) => p.defaultTeamImageUrl != null);
+      final url =
+          _projects.firstWhereOrNull((p) => p.defaultTeamImageUrl != null);
       if (url != null) {
         final imageRes = await _get(url.defaultTeamImageUrl!);
         if (imageRes.isError) _isImageUnauthorized = true;
@@ -665,8 +749,11 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   }
 
   @override
-  Future<ApiResponse<ProjectDetail>> getProject({required String projectName}) async {
-    final projectRes = await _get('$_basePath/_apis/projects/$projectName?$_apiVersion');
+  Future<ApiResponse<ProjectDetail>> getProject({
+    required String projectName,
+  }) async {
+    final projectRes =
+        await _get('$_basePath/_apis/projects/$projectName?$_apiVersion');
     if (projectRes.isError) return ApiResponse.error(projectRes);
 
     final summaryRes = await _post(
@@ -723,12 +810,21 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
   PipelinesMetrics? _getMetricsFromResponse(Response res) {
     final metrics = PipelinesSummary.fromResponse(res).metrics;
-    final total = metrics.where((m) => m.name == 'TotalBuilds').fold(0, (a, b) => a + b.intValue);
-    final successful = metrics.where((m) => m.name == 'SuccessfulBuilds').fold(0, (a, b) => a + b.intValue);
-    final partiallySuccessful =
-        metrics.where((m) => m.name == 'PartiallySuccessfulBuilds').fold(0, (a, b) => a + b.intValue);
-    final failed = metrics.where((m) => m.name == 'FailedBuilds').fold(0, (a, b) => a + b.intValue);
-    final canceled = metrics.where((m) => m.name == 'CanceledBuilds').fold(0, (a, b) => a + b.intValue);
+    final total = metrics
+        .where((m) => m.name == 'TotalBuilds')
+        .fold(0, (a, b) => a + b.intValue);
+    final successful = metrics
+        .where((m) => m.name == 'SuccessfulBuilds')
+        .fold(0, (a, b) => a + b.intValue);
+    final partiallySuccessful = metrics
+        .where((m) => m.name == 'PartiallySuccessfulBuilds')
+        .fold(0, (a, b) => a + b.intValue);
+    final failed = metrics
+        .where((m) => m.name == 'FailedBuilds')
+        .fold(0, (a, b) => a + b.intValue);
+    final canceled = metrics
+        .where((m) => m.name == 'CanceledBuilds')
+        .fold(0, (a, b) => a + b.intValue);
 
     return PipelinesMetrics(
       total: total,
@@ -758,18 +854,26 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     query.add(typesQuery);
 
     if (types != null) {
-      final typesQuery = _getMultipleFilter('[System.WorkItemType]', types.toList(), (t) => t.name);
+      final typesQuery = _getMultipleFilter(
+        '[System.WorkItemType]',
+        types.toList(),
+        (t) => t.name,
+      );
       query.add(typesQuery);
     }
 
     if (states != null) {
-      final statesQuery = _getMultipleFilter('[System.State]', states.toList(), (s) => s.name);
+      final statesQuery =
+          _getMultipleFilter('[System.State]', states.toList(), (s) => s.name);
       query.add(statesQuery);
     }
 
     if (assignedTo != null) {
-      final assignedToQuery =
-          _getMultipleFilter('[System.AssignedTo]', assignedTo.toList(), (s) => s.mailAddress ?? '');
+      final assignedToQuery = _getMultipleFilter(
+        '[System.AssignedTo]',
+        assignedTo.toList(),
+        (s) => s.mailAddress ?? '',
+      );
       query.add(assignedToQuery);
     }
 
@@ -778,7 +882,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     }
 
     if (iteration != null) {
-      query.add(" [System.IterationPath] = '${iteration.escapedIterationPath}' ");
+      query.add(
+        " [System.IterationPath] = '${iteration.escapedIterationPath}' ",
+      );
     }
 
     var queryStr = '';
@@ -789,7 +895,10 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
     final workItemIdsRes = await _post(
       '$_basePath/_apis/wit/wiql?\$top=200&$_apiVersion',
-      body: {'query': 'Select [System.Id] From WorkItems $queryStr Order By [System.ChangedDate] desc'},
+      body: {
+        'query':
+            'Select [System.Id] From WorkItems $queryStr Order By [System.ChangedDate] desc',
+      },
     );
     if (workItemIdsRes.isError) return ApiResponse.error(workItemIdsRes);
 
@@ -798,19 +907,26 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
     final ids = workItemIds.map((e) => e.id).join(',');
 
-    final allWorkItemsRes = await _get('$_basePath/_apis/wit/workitems?ids=$ids&$_apiVersion');
+    final allWorkItemsRes =
+        await _get('$_basePath/_apis/wit/workitems?ids=$ids&$_apiVersion');
 
     if (allWorkItemsRes.isError) return ApiResponse.error(allWorkItemsRes);
 
     return ApiResponse.ok(GetWorkItemsResponse.fromResponse(allWorkItemsRes));
   }
 
-  String _getMultipleFilter<T>(String variable, Iterable<T> filters, String Function(T) label) {
+  String _getMultipleFilter<T>(
+    String variable,
+    Iterable<T> filters,
+    String Function(T) label,
+  ) {
     var query = '';
 
     final filterList = filters.toList();
 
-    if (filterList.length == 1) return " $variable = '${label(filterList.first)}' ";
+    if (filterList.length == 1) {
+      return " $variable = '${label(filterList.first)}' ";
+    }
 
     for (var i = 0; i < filterList.length; i++) {
       if (i == 0) {
@@ -827,10 +943,14 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
   @override
   Future<ApiResponse<List<WorkItem>>> getMyRecentWorkItems() async {
-    const myQueryStr = ' Where [System.ChangedDate] = @today AND [System.ChangedBy] = @Me ';
+    const myQueryStr =
+        ' Where [System.ChangedDate] = @today AND [System.ChangedBy] = @Me ';
     final myWorkItemIdsRes = await _post(
       '$_basePath/_apis/wit/wiql?\$top=200&$_apiVersion',
-      body: {'query': 'Select [System.Id] From WorkItems $myQueryStr Order By [System.ChangedDate] desc'},
+      body: {
+        'query':
+            'Select [System.Id] From WorkItems $myQueryStr Order By [System.ChangedDate] desc',
+      },
     );
     if (myWorkItemIdsRes.isError) return ApiResponse.error(myWorkItemIdsRes);
 
@@ -839,7 +959,8 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
     final ids = workItemIds.map((e) => e.id).join(',');
 
-    final myWorkItemsRes = await _get('$_basePath/_apis/wit/workitems?ids=$ids&$_apiVersion');
+    final myWorkItemsRes =
+        await _get('$_basePath/_apis/wit/workitems?ids=$ids&$_apiVersion');
     if (myWorkItemsRes.isError) return ApiResponse.error(myWorkItemsRes);
 
     return ApiResponse.ok(GetWorkItemsResponse.fromResponse(myWorkItemsRes));
@@ -847,7 +968,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
   @override
   // ignore: long-method
-  Future<ApiResponse<Map<String, List<WorkItemType>>>> getWorkItemTypes({bool force = false}) async {
+  Future<ApiResponse<Map<String, List<WorkItemType>>>> getWorkItemTypes({
+    bool force = false,
+  }) async {
     if (_workItemTypes.isNotEmpty && !force) {
       // return cached types to avoid too many api calls
       return ApiResponse.ok(_workItemTypes);
@@ -860,34 +983,48 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
       _workItemIterations.clear();
     }
 
-    final processesRes = await _get('$_basePath/_apis/work/processes?\$expand=projects&$_apiVersion');
+    final processesRes = await _get(
+      '$_basePath/_apis/work/processes?\$expand=projects&$_apiVersion',
+    );
     if (processesRes.isError) return ApiResponse.error(processesRes);
 
-    final processes = GetProcessesResponse.fromResponse(processesRes).where((p) => p.projects.isNotEmpty).toList();
+    final processes = GetProcessesResponse.fromResponse(processesRes)
+        .where((p) => p.projects.isNotEmpty)
+        .toList();
 
     final processWorkItems = <WorkProcess, List<WorkItemType>>{};
 
     await Future.wait([
       for (final proc in processes)
-        _get('$_basePath/_apis/work/processes/${proc.typeId}/workItemTypes?\$expand=states&$_apiVersion').then(
+        _get('$_basePath/_apis/work/processes/${proc.typeId}/workItemTypes?\$expand=states&$_apiVersion')
+            .then(
           (res) {
             if (res.isError) return;
 
-            final types = GetWorkItemTypesResponse.fromResponse(res).where((t) => !t.isDisabled).toList();
-            final projectsToSearch = proc.projects.where((p) => (_chosenProjects ?? _projects).contains(p));
+            final types = GetWorkItemTypesResponse.fromResponse(res)
+                .where((t) => !t.isDisabled)
+                .toList();
+            final projectsToSearch = proc.projects
+                .where((p) => (_chosenProjects ?? _projects).contains(p));
             for (final proj in projectsToSearch) {
               if (_workItemAreas[proj.name!] == null) {
                 // ignore: unawaited_futures, reason: speed up work items page loading time
-                _get('$_basePath/${proj.name}/_apis/wit/classificationnodes?\$depth=14&$_apiVersion').then((areaRes) {
-                  final areasAndIterations = AreasAndIterationsResponse.fromResponse(areaRes);
+                _get('$_basePath/${proj.name}/_apis/wit/classificationnodes?\$depth=14&$_apiVersion')
+                    .then((areaRes) {
+                  final areasAndIterations =
+                      AreasAndIterationsResponse.fromResponse(areaRes);
 
                   _workItemAreas.putIfAbsent(
                     proj.name!,
-                    () => areasAndIterations.areasAndIterations.where((i) => i.structureType == 'area').toList(),
+                    () => areasAndIterations.areasAndIterations
+                        .where((i) => i.structureType == 'area')
+                        .toList(),
                   );
                   _workItemIterations.putIfAbsent(
                     proj.name!,
-                    () => areasAndIterations.areasAndIterations.where((i) => i.structureType == 'iteration').toList(),
+                    () => areasAndIterations.areasAndIterations
+                        .where((i) => i.structureType == 'iteration')
+                        .toList(),
                   );
                 });
               }
@@ -897,7 +1034,10 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
               for (final wt in types) {
                 final states = wt.states;
-                _workItemStates.putIfAbsent(proj.name!, () => {wt.name: states});
+                _workItemStates.putIfAbsent(
+                  proj.name!,
+                  () => {wt.name: states},
+                );
                 _workItemStates[proj.name]!.putIfAbsent(wt.name, () => states);
               }
             }
@@ -916,31 +1056,40 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     final cachedFields = _workItemFields[projectName]?[workItemName];
     if (cachedFields != null) return ApiResponse.ok(cachedFields);
 
-    final wtBasePath = '$_basePath/$projectName/_apis/wit/workItemTypes/$workItemName';
+    final wtBasePath =
+        '$_basePath/$projectName/_apis/wit/workItemTypes/$workItemName';
 
     // get xmlForm with all visible fields
     final typeRes = await _get('$wtBasePath?$_apiVersion-preview');
     if (typeRes.isError) return ApiResponse.error(null);
 
-    final typeWithTransitions = WorkItemTypeWithTransitions.fromResponse(typeRes);
+    final typeWithTransitions =
+        WorkItemTypeWithTransitions.fromResponse(typeRes);
     var refName = typeWithTransitions.referenceName;
 
-    if (typeWithTransitions.xmlForm.isEmpty || refName.isEmpty) return ApiResponse.error(null);
+    if (typeWithTransitions.xmlForm.isEmpty || refName.isEmpty) {
+      return ApiResponse.error(null);
+    }
 
     final visibleFields = _parseXmlForm(typeWithTransitions.xmlForm);
 
     // get all fields again because we need more info: isIdentity, readOnly and type
-    final fieldsResWithInfo = await _get('$_basePath/$projectName/_apis/wit/fields?$_apiVersion-preview');
+    final fieldsResWithInfo = await _get(
+      '$_basePath/$projectName/_apis/wit/fields?$_apiVersion-preview',
+    );
     if (fieldsResWithInfo.isError) return ApiResponse.error(null);
 
-    final allFieldsWithInfo = WorkItemTypeFieldsResponse.fromResponse(fieldsResWithInfo);
+    final allFieldsWithInfo =
+        WorkItemTypeFieldsResponse.fromResponse(fieldsResWithInfo);
 
     final allFields = <WorkItemField>[];
 
     // get all fields again because we need more info: allowedValues
     final parallelFieldsRes = await Future.wait([
       for (final field in allFieldsWithInfo)
-        _get('$wtBasePath/fields/${field.referenceName}?\$expand=allowedValues&$_apiVersion-preview'),
+        _get(
+          '$wtBasePath/fields/${field.referenceName}?\$expand=allowedValues&$_apiVersion-preview',
+        ),
     ]);
 
     for (final res in parallelFieldsRes.where((r) => !r.isError)) {
@@ -948,7 +1097,8 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     }
 
     for (final field in allFields) {
-      final fieldWithInfo = allFieldsWithInfo.firstWhereOrNull((f) => f.referenceName == field.referenceName);
+      final fieldWithInfo = allFieldsWithInfo
+          .firstWhereOrNull((f) => f.referenceName == field.referenceName);
       if (fieldWithInfo == null) continue;
 
       field
@@ -961,27 +1111,36 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
     final processesPath = '$_basePath/_apis/work/processes';
 
-    final processesRes = await _get('$processesPath?\$expand=projects&$_apiVersion');
+    final processesRes =
+        await _get('$processesPath?\$expand=projects&$_apiVersion');
     if (processesRes.isError) return ApiResponse.error(null);
 
-    final processes = GetProcessesResponse.fromResponse(processesRes).where((p) => p.projects.isNotEmpty).toList();
-    final projectProcess =
-        processes.firstWhere((p) => p.projects.any((proj) => proj.name == projectName || proj.id == projectName));
+    final processes = GetProcessesResponse.fromResponse(processesRes)
+        .where((p) => p.projects.isNotEmpty)
+        .toList();
+    final projectProcess = processes.firstWhere(
+      (p) => p.projects
+          .any((proj) => proj.name == projectName || proj.id == projectName),
+    );
 
     final isInheritedProcess = projectProcess.customizationType == 'inherited';
     if (isInheritedProcess) {
-      final type = _workItemTypes[projectName]?.firstWhereOrNull((t) => t.name == workItemName);
+      final type = _workItemTypes[projectName]
+          ?.firstWhereOrNull((t) => t.name == workItemName);
       final isInheritedType = type?.customization == 'inherited';
 
       if (isInheritedType) {
         // inherited types have a different name format
-        refName = '${projectProcess.name.replaceAll(' ', '')}.${workItemName.replaceAll(' ', '')}';
+        refName =
+            '${projectProcess.name.replaceAll(' ', '')}.${workItemName.replaceAll(' ', '')}';
       }
     }
 
-    final fieldNames = fields.values.expand((f) => f).map((f) => f.referenceName);
+    final fieldNames =
+        fields.values.expand((f) => f).map((f) => f.referenceName);
 
-    final rules = await _getWorkItemTypeRules(projectProcess, refName, fieldNames);
+    final rules =
+        await _getWorkItemTypeRules(projectProcess, refName, fieldNames);
 
     final fieldsWithRules = WorkItemFieldsWithRules(
       fields: fields,
@@ -989,8 +1148,12 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
       transitions: typeWithTransitions.transitions,
     );
 
-    _workItemFields.putIfAbsent(projectName, () => {workItemName: fieldsWithRules});
-    _workItemFields[projectName]!.putIfAbsent(workItemName, () => fieldsWithRules);
+    _workItemFields.putIfAbsent(
+      projectName,
+      () => {workItemName: fieldsWithRules},
+    );
+    _workItemFields[projectName]!
+        .putIfAbsent(workItemName, () => fieldsWithRules);
 
     return ApiResponse.ok(fieldsWithRules);
   }
@@ -1015,15 +1178,18 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
       final actions = r.actions;
 
-      final isVisibleField = actions.any((a) => fieldNames.contains(a.targetField));
-      final isSupportedAction = actions.any((a) => !_fieldNamesToSkip.contains(a.targetField));
+      final isVisibleField =
+          actions.any((a) => fieldNames.contains(a.targetField));
+      final isSupportedAction =
+          actions.any((a) => !_fieldNamesToSkip.contains(a.targetField));
 
       final isStateRule = actions.any((a) => 'System.State' == a.targetField);
 
       for (final action in actions) {
         if (isStateRule || (isVisibleField && isSupportedAction)) {
           mappedRules.putIfAbsent(action.targetField, () => []);
-          mappedRules[action.targetField]!.add((action: action, conditions: conditions));
+          mappedRules[action.targetField]!
+              .add((action: action, conditions: conditions));
         }
       }
     }
@@ -1036,14 +1202,16 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     required String projectName,
     required int workItemId,
   }) async {
-    final workItemPath = '$_basePath/$projectName/_apis/wit/workitems/$workItemId';
+    final workItemPath =
+        '$_basePath/$projectName/_apis/wit/workitems/$workItemId';
     final workItemRes = await _get('$workItemPath?$_apiVersion');
     if (workItemRes.isError) return ApiResponse.error(workItemRes);
 
     final updatesRes = await _get('$workItemPath/updates?$_apiVersion');
     if (updatesRes.isError) return ApiResponse.error(updatesRes);
 
-    final commentsRes = await _get('$workItemPath/comments?$_apiVersion-preview');
+    final commentsRes =
+        await _get('$workItemPath/comments?$_apiVersion-preview');
     if (commentsRes.isError) return ApiResponse.error(commentsRes);
 
     final item = WorkItem.fromResponse(workItemRes);
@@ -1054,7 +1222,10 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
       ...comments.map(
         (c) => CommentItemUpdate(
           updateDate: c.createdDate,
-          updatedBy: UpdateUser(descriptor: c.createdBy.descriptor, displayName: c.createdBy.displayName),
+          updatedBy: UpdateUser(
+            descriptor: c.createdBy.descriptor,
+            displayName: c.createdBy.displayName,
+          ),
           id: c.id,
           workItemId: c.workItemId,
           text: c.text,
@@ -1096,7 +1267,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
         return dateCompare;
       });
 
-    return ApiResponse.ok(WorkItemWithUpdates(item: item, updates: itemUpdates));
+    return ApiResponse.ok(
+      WorkItemWithUpdates(item: item, updates: itemUpdates),
+    );
   }
 
   @override
@@ -1105,15 +1278,18 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     required String attachmentId,
     required String fileName,
   }) async {
-    final attachmentRes =
-        await _get('$_basePath/$projectName/_apis/wit/attachments/$attachmentId?fileName=$fileName&$_apiVersion');
+    final attachmentRes = await _get(
+      '$_basePath/$projectName/_apis/wit/attachments/$attachmentId?fileName=$fileName&$_apiVersion',
+    );
     if (attachmentRes.isError) return ApiResponse.error(attachmentRes);
 
     return ApiResponse.ok(attachmentRes.bodyBytes);
   }
 
   @override
-  Future<ApiResponse<List<WorkItemTag>>> getProjectTags({required String projectName}) async {
+  Future<ApiResponse<List<WorkItemTag>>> getProjectTags({
+    required String projectName,
+  }) async {
     final tagsRes = await _get('$_basePath/$projectName/_apis/wit/tags');
     if (tagsRes.isError) return ApiResponse.error(tagsRes);
 
@@ -1331,13 +1507,21 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   }
 
   @override
-  Future<ApiResponse<bool>> deleteWorkItem({required String projectName, required int id, required String type}) async {
+  Future<ApiResponse<bool>> deleteWorkItem({
+    required String projectName,
+    required int id,
+    required String type,
+  }) async {
     if (type == 'Test Case') {
       // Test Case work items need special handling
-      final testCaseRes = await _delete('$_basePath/$projectName/_apis/test/testcases/$id?$_apiVersion');
+      final testCaseRes = await _delete(
+        '$_basePath/$projectName/_apis/test/testcases/$id?$_apiVersion',
+      );
       if (testCaseRes.isError) return ApiResponse.error(testCaseRes);
     } else {
-      final deleteRes = await _delete('$_basePath/$projectName/_apis/wit/workitems/$id?$_apiVersion');
+      final deleteRes = await _delete(
+        '$_basePath/$projectName/_apis/wit/workitems/$id?$_apiVersion',
+      );
       if (deleteRes.isError) return ApiResponse.error(deleteRes);
     }
 
@@ -1355,11 +1539,13 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     if (creators != null) {
       for (final creator in creators) {
         final creatorSearch = "&\$filter=name eq '${creator.mailAddress}'";
-        final entitlementRes =
-            await _get('https://vsaex.dev.azure.com/$_organization/_apis/userentitlements?$_apiVersion$creatorSearch');
+        final entitlementRes = await _get(
+          'https://devops.supa.vn:7443/$_organization/_apis/userentitlements?$_apiVersion$creatorSearch',
+        );
         if (entitlementRes.isError) continue;
 
-        final member = GetUserEntitlementsResponse.fromResponse(entitlementRes).firstOrNull;
+        final member = GetUserEntitlementsResponse.fromResponse(entitlementRes)
+            .firstOrNull;
         if (member == null) continue;
 
         creatorsFilter.add('&searchCriteria.creatorId=${member.id}');
@@ -1369,10 +1555,12 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     final reviewersFilter = <String>[''];
     if (reviewers != null) {
       for (final reviewer in reviewers) {
-        final reviewerIdentity = await getUserToMention(email: reviewer.mailAddress!);
+        final reviewerIdentity =
+            await getUserToMention(email: reviewer.mailAddress!);
         if (reviewerIdentity.data == null) continue;
 
-        reviewersFilter.add('&searchCriteria.reviewerId=${reviewerIdentity.data}');
+        reviewersFilter
+            .add('&searchCriteria.reviewerId=${reviewerIdentity.data}');
       }
     }
 
@@ -1409,21 +1597,35 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     if (isAllError) return ApiResponse.error(allProjectPrs.firstOrNull);
 
     return ApiResponse.ok(
-      allProjectPrs.where((r) => !r.isError).map(GetPullRequestsResponse.fromResponse).expand((b) => b).toList(),
+      allProjectPrs
+          .where((r) => !r.isError)
+          .map(GetPullRequestsResponse.fromResponse)
+          .expand((b) => b)
+          .toList(),
     );
   }
 
   @override
-  Future<ApiResponse<List<GitRepository>>> getProjectRepositories({required String projectName}) async {
-    final repositoriesRes = await _get('$_basePath/$projectName/_apis/git/repositories?$_apiVersion');
+  Future<ApiResponse<List<GitRepository>>> getProjectRepositories({
+    required String projectName,
+  }) async {
+    final repositoriesRes = await _get(
+      '$_basePath/$projectName/_apis/git/repositories?$_apiVersion',
+    );
     if (repositoriesRes.isError) return ApiResponse.error(repositoriesRes);
 
-    return ApiResponse.ok(GetRepositoriesResponse.fromResponse(repositoriesRes));
+    return ApiResponse.ok(
+      GetRepositoriesResponse.fromResponse(repositoriesRes),
+    );
   }
 
   @override
-  Future<ApiResponse<List<TeamWithMembers>>> getProjectTeams({required String projectId}) async {
-    final teamsRes = await _get('$_basePath/_apis/projects/$projectId/teams?$_apiVersion-preview');
+  Future<ApiResponse<List<TeamWithMembers>>> getProjectTeams({
+    required String projectId,
+  }) async {
+    final teamsRes = await _get(
+      '$_basePath/_apis/projects/$projectId/teams?$_apiVersion-preview',
+    );
     if (teamsRes.isError) return ApiResponse.error(teamsRes);
 
     final teams = GetTeamsResponse.fromResponse(teamsRes);
@@ -1433,7 +1635,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     final teamsWithMembers = <TeamWithMembers>[];
 
     for (final team in teams) {
-      final membersRes = await _get('$_basePath/_apis/projects/$projectId/teams/${team!.id}/members?$_apiVersion');
+      final membersRes = await _get(
+        '$_basePath/_apis/projects/$projectId/teams/${team!.id}/members?$_apiVersion',
+      );
       if (membersRes.isError) return ApiResponse.error(membersRes);
 
       final members = GetTeamMembersResponse.fromResponse(membersRes)!;
@@ -1450,38 +1654,50 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     required String repositoryId,
     required int id,
   }) async {
-    final prPath = '$_basePath/$projectName/_apis/git/repositories/$repositoryId/pullrequests/$id';
+    final prPath =
+        '$_basePath/$projectName/_apis/git/repositories/$repositoryId/pullrequests/$id';
 
     final prRes = await _get('$prPath?$_apiVersion');
     if (prRes.isError) return ApiResponse.error(prRes);
 
     final pr = PullRequest.fromResponse(prRes);
 
-    final artifactId = 'vstfs:///CodeReview/CodeReviewId/${pr.repository.project.id}/${pr.pullRequestId}';
+    final artifactId =
+        'vstfs:///CodeReview/CodeReviewId/${pr.repository.project.id}/${pr.pullRequestId}';
     final policiesRes = await _get(
       '$_basePath/$projectName/_apis/policy/evaluations?artifactId=$artifactId&$_apiVersion-preview',
     );
-    final policies = policiesRes.isError ? <Policy>[] : PoliciesResponse.fromResponse(policiesRes).policies;
+    final policies = policiesRes.isError
+        ? <Policy>[]
+        : PoliciesResponse.fromResponse(policiesRes).policies;
 
     final conflicts = <Conflict>[];
     if (pr.mergeStatus == 'conflicts') {
-      final conflictsRes = await _get('$prPath/conflicts?excludeResolved=true&$_apiVersion');
-      if (!conflictsRes.isError) conflicts.addAll(ConflictsResponse.fromResponse(conflictsRes).conflicts);
+      final conflictsRes =
+          await _get('$prPath/conflicts?excludeResolved=true&$_apiVersion');
+      if (!conflictsRes.isError) {
+        conflicts
+            .addAll(ConflictsResponse.fromResponse(conflictsRes).conflicts);
+      }
     }
 
     final allChanges = <CommitWithChangeEntry>[];
-    final iterationsRes = await _get('$prPath/iterations?includeCommits=true&$_apiVersion');
+    final iterationsRes =
+        await _get('$prPath/iterations?includeCommits=true&$_apiVersion');
 
     final iterations = <Iteration>[];
     if (!iterationsRes.isError) {
       iterations.addAll(IterationsRes.fromResponse(iterationsRes).iterations);
       await Future.wait([
         for (final iteration in iterations)
-          _get('$prPath/iterations/${iteration.id}/changes?$_apiVersion').then((changesRes) {
+          _get('$prPath/iterations/${iteration.id}/changes?$_apiVersion')
+              .then((changesRes) {
             if (changesRes.isError) return;
 
             final changes = ChangesRes.fromResponse(changesRes).changes;
-            allChanges.add(CommitWithChangeEntry(changes: changes, iteration: iteration));
+            allChanges.add(
+              CommitWithChangeEntry(changes: changes, iteration: iteration),
+            );
           }),
       ]);
     }
@@ -1489,17 +1705,28 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     var threads = <Thread>[];
     final threadsRes = await _get('$prPath/threads?$_apiVersion');
     if (!threadsRes.isError) {
-      threads = ThreadsRes.fromResponse(threadsRes).threads.where((t) => !t.isDeleted).toList();
+      threads = ThreadsRes.fromResponse(threadsRes)
+          .threads
+          .where((t) => !t.isDeleted)
+          .toList();
     }
 
-    final voteUpdates = threads.where((t) => t.properties?.type?.value == 'VoteUpdate');
-    final statusUpdates = threads.where((t) => t.properties?.type?.value == 'StatusUpdate');
-    final otherUpdates =
-        threads.where((t) => !['VoteUpdate', 'StatusUpdate', 'RefUpdate'].contains(t.properties?.type?.value));
+    final voteUpdates =
+        threads.where((t) => t.properties?.type?.value == 'VoteUpdate');
+    final statusUpdates =
+        threads.where((t) => t.properties?.type?.value == 'StatusUpdate');
+    final otherUpdates = threads.where(
+      (t) => ![
+        'VoteUpdate',
+        'StatusUpdate',
+        'RefUpdate',
+      ].contains(t.properties?.type?.value),
+    );
 
     final threadUpdates = <ThreadUpdate>[];
 
-    final threadsWithComments = threads.where((t) => t.comments.any((c) => c.commentType == 'text'));
+    final threadsWithComments =
+        threads.where((t) => t.comments.any((c) => c.commentType == 'text'));
 
     for (final t in threadsWithComments) {
       final textComments = t.comments.where((c) => c.commentType == 'text');
@@ -1567,7 +1794,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   }
 
   @override
-  Future<ApiResponse<Identity?>> getIdentityFromGuid({required String guid}) async {
+  Future<ApiResponse<Identity?>> getIdentityFromGuid({
+    required String guid,
+  }) async {
     final identityRes = await _post(
       '$_basePath/_apis/IdentityPicker/Identities?$_apiVersion-preview',
       body: {
@@ -1605,7 +1834,10 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     final reviewerPath =
         '$_basePath/$projectName/_apis/git/repositories/$repositoryId/pullrequests/$id/reviewers/$reviewerId?$_apiVersion';
 
-    final voteRes = await _put(reviewerPath, body: reviewer.copyWith(id: reviewerId).toMap());
+    final voteRes = await _put(
+      reviewerPath,
+      body: reviewer.copyWith(id: reviewerId).toMap(),
+    );
     if (voteRes.isError) return ApiResponse.error(voteRes);
 
     return ApiResponse.ok(true);
@@ -1634,17 +1866,21 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
       reviewerId = UserIdentity.fromResponse(identity).id;
     }
-    final prPath = '$_basePath/$projectName/_apis/git/repositories/$repositoryId/pullrequests/$id?$_apiVersion';
+    final prPath =
+        '$_basePath/$projectName/_apis/git/repositories/$repositoryId/pullrequests/$id?$_apiVersion';
 
     final editRes = await _patch(
       prPath,
       body: {
         if (isDraft != null) 'isDraft': isDraft,
         if (status != null) 'status': status.name,
-        if (status == PullRequestStatus.completed) 'lastMergeSourceCommit': {'commitId': commitId},
+        if (status == PullRequestStatus.completed)
+          'lastMergeSourceCommit': {'commitId': commitId},
         if (autocomplete != null)
           'autoCompleteSetBy': {
-            'id': autocomplete ? reviewerId : '00000000-0000-0000-0000-000000000000',
+            'id': autocomplete
+                ? reviewerId
+                : '00000000-0000-0000-0000-000000000000',
           },
         if (status == PullRequestStatus.completed || isSettingAutocomplete)
           'completionOptions': {
@@ -1691,9 +1927,12 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     int? lineLength,
     bool isRightFile = false,
   }) async {
-    final threadsPath = '$_basePath/_apis/git/repositories/$repositoryId/pullRequests/$pullRequestId/threads';
+    final threadsPath =
+        '$_basePath/_apis/git/repositories/$repositoryId/pullRequests/$pullRequestId/threads';
 
-    final prPath = threadId == null ? '$threadsPath?$_apiVersion' : '$threadsPath/$threadId/comments?$_apiVersion';
+    final prPath = threadId == null
+        ? '$threadsPath?$_apiVersion'
+        : '$threadsPath/$threadId/comments?$_apiVersion';
 
     final commentBody = {
       'content': text,
@@ -1780,7 +2019,8 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
     if (branch != null) {
       final encodedBranch = Uri.encodeQueryComponent(branch);
-      branchQuery = 'versionDescriptor.version=$encodedBranch&versionDescriptor.versionType=branch&';
+      branchQuery =
+          'versionDescriptor.version=$encodedBranch&versionDescriptor.versionType=branch&';
     }
 
     final encodedPath = Uri.encodeQueryComponent(path);
@@ -1797,8 +2037,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     required String projectName,
     required String repoName,
   }) async {
-    final branchesRes =
-        await _get('$_basePath/$projectName/_apis/git/repositories/$repoName/stats/branches?$_apiVersion');
+    final branchesRes = await _get(
+      '$_basePath/$projectName/_apis/git/repositories/$repoName/stats/branches?$_apiVersion',
+    );
     if (branchesRes.isError) return ApiResponse.error(branchesRes);
 
     return ApiResponse.ok(RepositoryBranchesResponse.fromResponse(branchesRes));
@@ -1816,10 +2057,12 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     var versionQuery = '';
 
     if (commitId != null) {
-      versionQuery = 'versionDescriptor.version=$commitId&versionDescriptor.versionType=commit&';
+      versionQuery =
+          'versionDescriptor.version=$commitId&versionDescriptor.versionType=commit&';
     } else if (branch != null) {
       final encodedBranch = Uri.encodeQueryComponent(branch);
-      versionQuery = 'versionDescriptor.version=$encodedBranch&versionDescriptor.versionType=branch&';
+      versionQuery =
+          'versionDescriptor.version=$encodedBranch&versionDescriptor.versionType=branch&';
     }
 
     if (previousChange) {
@@ -1834,12 +2077,18 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
     final isBinary = res.body.contains('\u0000');
 
-    return ApiResponse.ok(FileDetailResponse(content: res.body, isBinary: isBinary));
+    return ApiResponse.ok(
+      FileDetailResponse(content: res.body, isBinary: isBinary),
+    );
   }
 
   @override
-  Future<ApiResponse<List<LanguageBreakdown>>> getProjectLanguages({required String projectName}) async {
-    final langsRes = await _get('$_basePath/$projectName/_apis/projectanalysis/languagemetrics');
+  Future<ApiResponse<List<LanguageBreakdown>>> getProjectLanguages({
+    required String projectName,
+  }) async {
+    final langsRes = await _get(
+      '$_basePath/$projectName/_apis/projectanalysis/languagemetrics',
+    );
     if (langsRes.isError) return ApiResponse.error(langsRes);
 
     return ApiResponse.ok(GetProjectLanguagesResponse.fromResponse(langsRes));
@@ -1855,20 +2104,27 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   }) async {
     const orderSearch = '&queryOrder=queueTimeDescending';
     final resultSearch = '&resultFilter=${result.stringValue}';
-    final statusSearch = result != PipelineResult.all ? '' : '&statusFilter=${status.stringValue}';
+    final statusSearch = result != PipelineResult.all
+        ? ''
+        : '&statusFilter=${status.stringValue}';
 
-    final definitionSearch = definition == null ? '' : '&definitions=$definition';
+    final definitionSearch =
+        definition == null ? '' : '&definitions=$definition';
 
-    final projectsToSearch = (definition != null || projects != null) ? projects! : (_chosenProjects ?? _projects);
+    final projectsToSearch = (definition != null || projects != null)
+        ? projects!
+        : (_chosenProjects ?? _projects);
 
     final allProjectPipelines = <Response>[];
 
     for (final author in triggeredBy ?? {''}) {
       final triggeredBySearch = author.isEmpty ? '' : '&requestedFor=$author';
-      final queryParams = '$_apiVersion$orderSearch$resultSearch$statusSearch$triggeredBySearch$definitionSearch';
+      final queryParams =
+          '$_apiVersion$orderSearch$resultSearch$statusSearch$triggeredBySearch$definitionSearch';
       allProjectPipelines.addAll(
         await Future.wait([
-          for (final project in projectsToSearch) _get('$_basePath/${project.name}/_apis/build/builds?$queryParams'),
+          for (final project in projectsToSearch)
+            _get('$_basePath/${project.name}/_apis/build/builds?$queryParams'),
         ]),
       );
     }
@@ -1881,24 +2137,36 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
     if (isAllError) return ApiResponse.error(allProjectPipelines.firstOrNull);
 
-    final res =
-        allProjectPipelines.where((r) => !r.isError).map(GetPipelineResponse.fromResponse).expand((b) => b).toList();
+    final res = allProjectPipelines
+        .where((r) => !r.isError)
+        .map(GetPipelineResponse.fromResponse)
+        .expand((b) => b)
+        .toList();
 
     return ApiResponse.ok(res);
   }
 
   @override
-  Future<ApiResponse<PipelineWithTimeline>> getPipeline({required String projectName, required int id}) async {
-    final pipelineRes = await _get('$_basePath/$projectName/_apis/build/builds/$id?$_apiVersion');
+  Future<ApiResponse<PipelineWithTimeline>> getPipeline({
+    required String projectName,
+    required int id,
+  }) async {
+    final pipelineRes = await _get(
+      '$_basePath/$projectName/_apis/build/builds/$id?$_apiVersion',
+    );
     if (pipelineRes.isError) return ApiResponse.error(pipelineRes);
 
-    final timelineRes = await _get('$_basePath/$projectName/_apis/build/builds/$id/timeline?$_apiVersion');
+    final timelineRes = await _get(
+      '$_basePath/$projectName/_apis/build/builds/$id/timeline?$_apiVersion',
+    );
 
     final pipeline = Pipeline.fromResponse(pipelineRes);
     final timeline = timelineRes.isError || timelineRes.statusCode == 204
         ? <Record>[]
         : GetTimelineResponse.fromResponse(timelineRes);
-    return ApiResponse.ok(PipelineWithTimeline(pipeline: pipeline, timeline: timeline));
+    return ApiResponse.ok(
+      PipelineWithTimeline(pipeline: pipeline, timeline: timeline),
+    );
   }
 
   @override
@@ -1907,7 +2175,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     required int pipelineId,
     required int logId,
   }) async {
-    final logsRes = await _get('$_basePath/$projectName/_apis/build/builds/$pipelineId/logs/$logId?$_apiVersion');
+    final logsRes = await _get(
+      '$_basePath/$projectName/_apis/build/builds/$pipelineId/logs/$logId?$_apiVersion',
+    );
     if (logsRes.isError) return ApiResponse.error(logsRes);
 
     return ApiResponse.ok(logsRes.body);
@@ -1922,7 +2192,8 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     final projectsToSearch = projects ?? (_chosenProjects ?? _projects);
 
     final allProjectRepos = await Future.wait([
-      for (final project in projectsToSearch) _get('$_basePath/${project.name}/_apis/git/repositories?$_apiVersion'),
+      for (final project in projectsToSearch)
+        _get('$_basePath/${project.name}/_apis/git/repositories?$_apiVersion'),
     ]);
 
     var isAllError = true;
@@ -1933,15 +2204,19 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
     if (isAllError) return ApiResponse.error(allProjectRepos.firstOrNull);
 
-    final repos =
-        allProjectRepos.where((r) => !r.isError).map(GetRepositoriesResponse.fromResponse).expand((r) => r).toList();
+    final repos = allProjectRepos
+        .where((r) => !r.isError)
+        .map(GetRepositoriesResponse.fromResponse)
+        .expand((r) => r)
+        .toList();
 
     final topSearch = maxCount != null ? '&searchCriteria.\$top=$maxCount' : '';
 
     final allProjectCommits = <Response>[];
 
     for (final author in authors ?? {''}) {
-      final authorSearch = author.isNotEmpty ? '&searchCriteria.author=$author' : '';
+      final authorSearch =
+          author.isNotEmpty ? '&searchCriteria.author=$author' : '';
 
       // get commits in slices to avoid 'too many open files' error happening on iOS
       final slices = repos.slices(50);
@@ -1963,10 +2238,15 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
       isAllCommitsError &= res.isError;
     }
 
-    if (isAllCommitsError) return ApiResponse.error(allProjectCommits.firstOrNull);
+    if (isAllCommitsError) {
+      return ApiResponse.error(allProjectCommits.firstOrNull);
+    }
 
-    final commits =
-        allProjectCommits.where((r) => !r.isError).map(GetCommitsResponse.fromResponse).expand((c) => c).toList();
+    final commits = allProjectCommits
+        .where((r) => !r.isError)
+        .map(GetCommitsResponse.fromResponse)
+        .expand((c) => c)
+        .toList();
 
     return ApiResponse.ok(commits);
   }
@@ -2006,15 +2286,18 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   }) async {
     if (commitId.isEmpty) return ApiResponse.error(null);
 
-    final detailRes =
-        await _get('$_basePath/$projectId/_apis/git/repositories/$repositoryId/commits/$commitId?$_apiVersion');
+    final detailRes = await _get(
+      '$_basePath/$projectId/_apis/git/repositories/$repositoryId/commits/$commitId?$_apiVersion',
+    );
     if (detailRes.isError) return ApiResponse.error(detailRes);
 
-    final changesRes =
-        await _get('$_basePath/$projectId/_apis/git/repositories/$repositoryId/commits/$commitId/changes?$_apiVersion');
+    final changesRes = await _get(
+      '$_basePath/$projectId/_apis/git/repositories/$repositoryId/commits/$commitId/changes?$_apiVersion',
+    );
 
     final commit = Commit.fromResponse(detailRes);
-    final changes = changesRes.isError ? null : CommitChanges.fromResponse(changesRes);
+    final changes =
+        changesRes.isError ? null : CommitChanges.fromResponse(changesRes);
 
     final tags = await getTags([commit]);
     commit.tags = tags?.tags[commitId];
@@ -2042,7 +2325,8 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
               if (!isDeleted) 'modifiedPath': filePath,
               if (!isDeleted) 'modifiedVersion': 'GC${commit.commitId}',
               if (!isAdded) 'originalPath': filePath,
-              if (!isAdded && hasParent) 'originalVersion': 'GC${commit.parents!.first}',
+              if (!isAdded && hasParent)
+                'originalVersion': 'GC${commit.parents!.first}',
               'partialDiff': true,
               'forceLoad': false,
             },
@@ -2056,7 +2340,10 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   }
 
   @override
-  Future<ApiResponse<Pipeline>> cancelPipeline({required int buildId, required String projectId}) async {
+  Future<ApiResponse<Pipeline>> cancelPipeline({
+    required int buildId,
+    required String projectId,
+  }) async {
     final cancelRes = await _patch(
       '$_basePath/$projectId/_apis/build/builds/$buildId?$_apiVersion',
       body: {'status': PipelineStatus.cancelling.stringValue},
@@ -2090,7 +2377,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   }) async {
     if (_allUsers.isEmpty) await _getUsers();
 
-    return ApiResponse.ok(_allUsers.firstWhereOrNull((u) => u.mailAddress == email));
+    return ApiResponse.ok(
+      _allUsers.firstWhereOrNull((u) => u.mailAddress == email),
+    );
   }
 
   @override
@@ -2101,7 +2390,9 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
     final user = _allUsers.firstWhereOrNull((u) => u.descriptor == descriptor);
     if (user == null) {
-      return ApiResponse.error(Response('', 404, reasonPhrase: 'User not found'));
+      return ApiResponse.error(
+        Response('', 404, reasonPhrase: 'User not found'),
+      );
     }
 
     return ApiResponse.ok(user);
@@ -2132,11 +2423,15 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   }
 
   Future<ApiResponse<List<GraphUser>>> _getUsers() async {
-    final usersRes =
-        await _get('$_usersBasePath/$_organization/_apis/graph/users?subjectTypes=aad,msa&$_apiVersion-preview');
-    if (usersRes.isError) return ApiResponse.error(usersRes);
+    // final usersRes = await _get(
+    //   '$_usersBasePath/$_organization/_apis/graph/users?api-version=7.1-preview.1',
+    // );
 
-    _allUsers = GetUsersResponse.fromResponse(usersRes);
+    // if (usersRes.isError) return ApiResponse.error(usersRes);
+
+    /// TODO: get users from apis
+    _allUsers = [];
+
     return ApiResponse.ok(_allUsers);
   }
 
@@ -2156,14 +2451,21 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     final document = XmlDocument.parse(xmlForm);
     for (final desc in document.descendantElements) {
       if (desc.localName == 'Control') {
-        final fieldName = desc.attributes.firstWhereOrNull((att) => att.localName == 'FieldName');
+        final fieldName = desc.attributes
+            .firstWhereOrNull((att) => att.localName == 'FieldName');
         if (fieldName != null) {
-          final readOnlyAttribute = desc.attributes.firstWhereOrNull((att) => att.localName == 'ReadOnly');
-          final isReadOnly = readOnlyAttribute != null && readOnlyAttribute.value == 'True';
+          final readOnlyAttribute = desc.attributes
+              .firstWhereOrNull((att) => att.localName == 'ReadOnly');
+          final isReadOnly =
+              readOnlyAttribute != null && readOnlyAttribute.value == 'True';
           if (!isReadOnly && !_fieldNamesToSkip.contains(fieldName.value)) {
             // get field group's label
-            final group = desc.ancestorElements.firstWhereOrNull((e) => e.localName == 'Group');
-            final groupLabel = group?.attributes.firstWhereOrNull((att) => att.localName == 'Label')?.value ?? '';
+            final group = desc.ancestorElements
+                .firstWhereOrNull((e) => e.localName == 'Group');
+            final groupLabel = group?.attributes
+                    .firstWhereOrNull((att) => att.localName == 'Label')
+                    ?.value ??
+                '';
 
             visibleFields.putIfAbsent(groupLabel, () => {fieldName.value});
             visibleFields[groupLabel]!.add(fieldName.value);
@@ -2175,12 +2477,16 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
     return visibleFields;
   }
 
-  LabeledWorkItemFields _matchFields(Map<String, Set<String>> visibleFields, List<WorkItemField> allFields) {
+  LabeledWorkItemFields _matchFields(
+    Map<String, Set<String>> visibleFields,
+    List<WorkItemField> allFields,
+  ) {
     final matchedFields = <String, Set<WorkItemField>>{};
 
     for (final entry in visibleFields.entries) {
       for (final field in entry.value) {
-        final matched = allFields.firstWhereOrNull((f) => f.referenceName == field);
+        final matched =
+            allFields.firstWhereOrNull((f) => f.referenceName == field);
         if (matched != null &&
             matched.referenceName != 'System.History' &&
             matched.referenceName != 'System.CreatedBy' &&
@@ -2205,7 +2511,8 @@ class AzureApiServiceInherited extends InheritedWidget {
   final AzureApiService apiService;
 
   static AzureApiServiceInherited of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<AzureApiServiceInherited>()!;
+    return context
+        .dependOnInheritedWidgetOfExactType<AzureApiServiceInherited>()!;
   }
 
   @override
@@ -2254,7 +2561,8 @@ class ApiResponse<T extends Object?> {
   }
 
   @override
-  String toString() => 'ApiResponse(isError: $isError, data: $data, errorResponse: $errorResponse)';
+  String toString() =>
+      'ApiResponse(isError: $isError, data: $data, errorResponse: $errorResponse)';
 }
 
 class FileDetailResponse {

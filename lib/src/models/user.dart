@@ -9,17 +9,21 @@ class GetUsersResponse {
     required this.users,
   });
 
-  factory GetUsersResponse.fromJson(Map<String, dynamic> json) => GetUsersResponse(
+  factory GetUsersResponse.fromJson(Map<String, dynamic> json) =>
+      GetUsersResponse(
         count: json['count'] as int?,
         users: json['value'] == null
             ? []
             : List<GraphUser>.from(
-                (json['value'] as List<dynamic>).map((x) => GraphUser.fromJson(x as Map<String, dynamic>)),
+                (json['value'] as List<dynamic>)
+                    .map((x) => GraphUser.fromJson(x as Map<String, dynamic>)),
               ),
       );
 
   static List<GraphUser> fromResponse(Response res) =>
-      GetUsersResponse.fromJson(jsonDecode(res.body) as Map<String, dynamic>).users ?? [];
+      GetUsersResponse.fromJson(jsonDecode(res.body) as Map<String, dynamic>)
+          .users ??
+      [];
 
   final int? count;
   final List<GraphUser>? users;
@@ -51,7 +55,9 @@ class GraphUser {
         origin: json['origin'] as String?,
         originId: json['originId'] as String?,
         displayName: json['displayName'] as String?,
-        links: json['Links'] == null ? null : Links.fromJson(json['Links'] as Map<String, dynamic>),
+        links: json['Links'] == null
+            ? null
+            : Links.fromJson(json['Links'] as Map<String, dynamic>),
         url: json['url'] as String?,
         descriptor: json['descriptor'] as String?,
         metaType: json['metaType'] as String?,
@@ -115,16 +121,24 @@ class UserMe {
     required this.timeStamp,
     required this.id,
     required this.revision,
+    required this.userPreferences,
   });
 
   factory UserMe.fromJson(Map<String, dynamic> json) => UserMe(
-        displayName: json['displayName'] as String?,
-        publicAlias: json['publicAlias'] as String?,
-        emailAddress: json['emailAddress'] as String?,
+        displayName: json['identity']['DisplayName'] as String?,
+        publicAlias: json['identity']['AccountName'] as String?,
+        emailAddress: json['userPreferences']['PreferredEmail'] as String,
         coreRevision: json['coreRevision'] as int?,
-        timeStamp: json['timeStamp'] == null ? null : DateTime.parse(json['timeStamp'].toString()).toLocal(),
+        timeStamp: json['timeStamp'] == null
+            ? null
+            : DateTime.parse(json['timeStamp'].toString()).toLocal(),
         id: json['id'] as String?,
         revision: json['revision'] as int?,
+        userPreferences: json['userPreferences'] != null
+            ? UserPreferences.fromJson(
+                json['userPreferences'] as Map<String, dynamic>,
+              )
+            : null,
       );
 
   final String? displayName;
@@ -134,6 +148,7 @@ class UserMe {
   final DateTime? timeStamp;
   final String? id;
   final int? revision;
+  final UserPreferences? userPreferences;
 
   @override
   String toString() {
@@ -177,4 +192,35 @@ class UserIdentity {
   }
 
   final String? id;
+}
+
+class UserPreferences {
+  UserPreferences({
+    this.customDisplayName,
+    this.preferredEmail,
+    this.isEmailConfirmationPending,
+    this.theme,
+    this.typeAheadDisabled,
+    this.resetEmail,
+    this.resetDisplayName,
+  });
+
+  factory UserPreferences.fromJson(Map<String, dynamic> json) {
+    return UserPreferences(
+      customDisplayName: json['CustomDisplayName'] as String?,
+      preferredEmail: json['PreferredEmail'] as String?,
+      isEmailConfirmationPending: json['IsEmailConfirmationPending'] as bool?,
+      theme: json['Theme'] as String?,
+      typeAheadDisabled: json['TypeAheadDisabled'] as bool?,
+      resetEmail: json['ResetEmail'] as bool?,
+      resetDisplayName: json['ResetDisplayName'] as bool?,
+    );
+  }
+  final String? customDisplayName;
+  final String? preferredEmail;
+  final bool? isEmailConfirmationPending;
+  final String? theme;
+  final bool? typeAheadDisabled;
+  final bool? resetEmail;
+  final bool? resetDisplayName;
 }
