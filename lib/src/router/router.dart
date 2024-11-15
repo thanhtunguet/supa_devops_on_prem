@@ -30,19 +30,49 @@ import 'package:flutter/services.dart';
 
 typedef WorkItemsArgs = ({Project? project, SavedShortcut? shortcut});
 typedef WorkItemDetailArgs = ({String project, int id});
-typedef CreateOrEditWorkItemArgs = ({String? project, int? id, String? area, String? iteration});
+typedef CreateOrEditWorkItemArgs = ({
+  String? project,
+  int? id,
+  String? area,
+  String? iteration
+});
 typedef PullRequestArgs = ({Project? project, SavedShortcut? shortcut});
 typedef PullRequestDetailArgs = ({String project, String repository, int id});
-typedef CommitsArgs = ({Project? project, GraphUser? author, SavedShortcut? shortcut});
-typedef CommitDetailArgs = ({String project, String repository, String commitId});
-typedef FileDiffArgs = ({Commit commit, String filePath, bool isAdded, bool isDeleted, int? pullRequestId});
-typedef PipelineLogsArgs = ({String project, int pipelineId, String taskId, String parentTaskId, int logId});
-typedef PipelinesArgs = ({Project? project, int? definition, SavedShortcut? shortcut});
+typedef CommitsArgs = ({
+  Project? project,
+  GraphUser? author,
+  SavedShortcut? shortcut
+});
+typedef CommitDetailArgs = ({
+  String project,
+  String repository,
+  String commitId
+});
+typedef FileDiffArgs = ({
+  Commit commit,
+  String filePath,
+  bool isAdded,
+  bool isDeleted,
+  int? pullRequestId
+});
+typedef PipelineLogsArgs = ({
+  String project,
+  int pipelineId,
+  String taskId,
+  String parentTaskId,
+  int logId
+});
+typedef PipelinesArgs = ({
+  Project? project,
+  int? definition,
+  SavedShortcut? shortcut
+});
 
 class AppRouter {
   AppRouter._();
 
-  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Root navigator key');
+  static GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: 'Root navigator key');
 
   static const _splash = '/';
   static const _login = '/login';
@@ -108,7 +138,8 @@ class AppRouter {
     _workItemDetail: (_) => WorkItemDetailPage(),
     _pullRequestDetail: (_) => PullRequestDetailPage(),
     _createOrEditWorkItem: (_) => CreateOrEditWorkItemPage(),
-    _error: (_) => ErrorPage(description: 'Something went wrong', onRetry: goToSplash),
+    _error: (_) =>
+        ErrorPage(description: 'Something went wrong', onRetry: goToSplash),
   };
 
   static Future<void> goToSplash() async {
@@ -125,7 +156,11 @@ class AppRouter {
 
   static Future<void> goToChooseProjects({bool removeRoutes = true}) async {
     if (removeRoutes) {
-      await rootNavigator!.pushNamedAndRemoveUntil(_chooseProjects, (_) => false, arguments: removeRoutes);
+      await rootNavigator!.pushNamedAndRemoveUntil(
+        _chooseProjects,
+        (_) => false,
+        arguments: removeRoutes,
+      );
     } else {
       await rootNavigator!.pushNamed(_chooseProjects, arguments: removeRoutes);
     }
@@ -133,22 +168,38 @@ class AppRouter {
 
   static bool getChooseProjectArgs(BuildContext context) => _getArgs(context);
 
-  static Future<void> goToPipelines({PipelinesArgs? args}) => _goTo(_pipelines, args: args);
+  static Future<void> goToPipelines({PipelinesArgs? args}) =>
+      _goTo(_pipelines, args: args);
 
-  static PipelinesArgs? getPipelinesArgs(BuildContext context) => _getArgs(context);
+  static PipelinesArgs? getPipelinesArgs(BuildContext context) =>
+      _getArgs(context);
 
-  static Future<void> goToPipelineDetail({required int id, required String project}) =>
+  static Future<void> goToPipelineDetail({
+    required int id,
+    required String project,
+  }) =>
       _goTo(_pipelineDetail, args: (id: id, project: project));
 
-  static ({String project, int id}) getPipelineDetailArgs(BuildContext context) => _getArgs(context);
+  static ({String project, int id}) getPipelineDetailArgs(
+    BuildContext context,
+  ) =>
+      _getArgs(context);
 
   static Future<void> goToPipelineLogs(PipelineLogsArgs pipeline) =>
       _goTo<PipelineLogsArgs>(_pipelineLogs, args: pipeline);
 
-  static PipelineLogsArgs getPipelineLogsArgs(BuildContext context) => _getArgs(context);
+  static PipelineLogsArgs getPipelineLogsArgs(BuildContext context) =>
+      _getArgs(context);
 
-  static Future<void> goToCommits({Project? project, GraphUser? author, SavedShortcut? shortcut}) =>
-      _goTo(_commits, args: (project: project, author: author, shortcut: shortcut));
+  static Future<void> goToCommits({
+    Project? project,
+    GraphUser? author,
+    SavedShortcut? shortcut,
+  }) =>
+      _goTo(
+        _commits,
+        args: (project: project, author: author, shortcut: shortcut),
+      );
 
   static CommitsArgs? getCommitsArgs(BuildContext context) => _getArgs(context);
 
@@ -157,54 +208,91 @@ class AppRouter {
     required String repository,
     required String commitId,
   }) async =>
-      _goTo<CommitDetailArgs>(_commitDetail, args: (project: project, repository: repository, commitId: commitId));
+      _goTo<CommitDetailArgs>(
+        _commitDetail,
+        args: (project: project, repository: repository, commitId: commitId),
+      );
 
-  static CommitDetailArgs getCommitDetailArgs(BuildContext context) => _getArgs(context);
+  static CommitDetailArgs getCommitDetailArgs(BuildContext context) =>
+      _getArgs(context);
 
-  static Future<void> goToFileDiff(FileDiffArgs args) => _goTo<FileDiffArgs>(_fileDiff, args: args);
+  static Future<void> goToFileDiff(FileDiffArgs args) =>
+      _goTo<FileDiffArgs>(_fileDiff, args: args);
 
-  static FileDiffArgs getCommitDiffArgs(BuildContext context) => _getArgs(context);
+  static FileDiffArgs getCommitDiffArgs(BuildContext context) =>
+      _getArgs(context);
 
-  static Future<void> goToProjectDetail(String projectName) => _goTo(_projectDetail, args: projectName);
+  static Future<void> goToProjectDetail(String projectName) =>
+      _goTo(_projectDetail, args: projectName);
 
   static String getProjectDetailArgs(BuildContext context) => _getArgs(context);
 
-  static Future<void> goToWorkItems({WorkItemsArgs? args}) => _goTo(_workItems, args: args);
+  static Future<void> goToWorkItems({WorkItemsArgs? args}) =>
+      _goTo(_workItems, args: args);
 
-  static WorkItemsArgs? getWorkItemsArgs(BuildContext context) => _getArgs(context);
+  static WorkItemsArgs? getWorkItemsArgs(BuildContext context) =>
+      _getArgs(context);
 
-  static Future<void> goToWorkItemDetail({required String project, required int id}) =>
-      _goTo<WorkItemDetailArgs>(_workItemDetail, args: (project: project, id: id));
+  static Future<void> goToWorkItemDetail({
+    required String project,
+    required int id,
+  }) =>
+      _goTo<WorkItemDetailArgs>(
+        _workItemDetail,
+        args: (project: project, id: id),
+      );
 
-  static WorkItemDetailArgs getWorkItemDetailArgs(BuildContext context) => _getArgs(context);
+  static WorkItemDetailArgs getWorkItemDetailArgs(BuildContext context) =>
+      _getArgs(context);
 
-  static Future<void> goToCreateOrEditWorkItem({CreateOrEditWorkItemArgs? args}) =>
+  static Future<void> goToCreateOrEditWorkItem({
+    CreateOrEditWorkItemArgs? args,
+  }) =>
       _goTo<CreateOrEditWorkItemArgs>(_createOrEditWorkItem, args: args);
 
-  static CreateOrEditWorkItemArgs getCreateOrEditWorkItemArgs(BuildContext context) => _getArgs(context);
+  static CreateOrEditWorkItemArgs getCreateOrEditWorkItemArgs(
+    BuildContext context,
+  ) =>
+      _getArgs(context);
 
-  static Future<void> goToPullRequests({PullRequestArgs? args}) => _goTo(_pullRequests, args: args);
+  static Future<void> goToPullRequests({PullRequestArgs? args}) =>
+      _goTo(_pullRequests, args: args);
 
-  static PullRequestArgs? getPullRequestsArgs(BuildContext context) => _getArgs(context);
+  static PullRequestArgs? getPullRequestsArgs(BuildContext context) =>
+      _getArgs(context);
 
-  static Future<void> goToPullRequestDetail({required String project, required String repository, required int id}) =>
-      _goTo<PullRequestDetailArgs>(_pullRequestDetail, args: (project: project, repository: repository, id: id));
+  static Future<void> goToPullRequestDetail({
+    required String project,
+    required String repository,
+    required int id,
+  }) =>
+      _goTo<PullRequestDetailArgs>(
+        _pullRequestDetail,
+        args: (project: project, repository: repository, id: id),
+      );
 
-  static PullRequestDetailArgs getPullRequestDetailArgs(BuildContext context) => _getArgs(context);
+  static PullRequestDetailArgs getPullRequestDetailArgs(BuildContext context) =>
+      _getArgs(context);
 
-  static Future<void> goToRepositoryDetail(RepoDetailArgs args) => _goTo(_repoDetail, args: args);
+  static Future<void> goToRepositoryDetail(RepoDetailArgs args) =>
+      _goTo(_repoDetail, args: args);
 
-  static RepoDetailArgs getRepositoryDetailArgs(BuildContext context) => _getArgs(context);
+  static RepoDetailArgs getRepositoryDetailArgs(BuildContext context) =>
+      _getArgs(context);
 
-  static Future<void> goToFileDetail(RepoDetailArgs args) => _goTo(_fileDetail, args: args);
+  static Future<void> goToFileDetail(RepoDetailArgs args) =>
+      _goTo(_fileDetail, args: args);
 
-  static RepoDetailArgs getFileDetailArgs(BuildContext context) => _getArgs(context);
+  static RepoDetailArgs getFileDetailArgs(BuildContext context) =>
+      _getArgs(context);
 
-  static Future<void> goToMemberDetail(String userDescriptor) => _goTo(_memberDetail, args: userDescriptor);
+  static Future<void> goToMemberDetail(String userDescriptor) =>
+      _goTo(_memberDetail, args: userDescriptor);
 
   static String getMemberDetailArgs(BuildContext context) => _getArgs(context);
 
-  static Future<void> goToError({required String description}) => _goTo(_error, args: description);
+  static Future<void> goToError({required String description}) =>
+      _goTo(_error, args: description);
 
   static void pop({bool? result}) {
     _currentNavigator!.pop(result);
@@ -217,7 +305,10 @@ class AppRouter {
   static Future<void> askBeforeClosingApp({required bool didPop}) async {
     if (didPop) return;
 
-    final shouldPop = await OverlayService.confirm('Attention', description: 'Do you really want to close the app?');
+    final shouldPop = await OverlayService.confirm(
+      'Attention',
+      description: 'Do you really want to close the app?',
+    );
 
     if (shouldPop) {
       await Future<void>.delayed(Duration(milliseconds: 100));
@@ -225,9 +316,11 @@ class AppRouter {
     }
   }
 
-  static Future<void> _goTo<T>(String page, {T? args}) => _currentNavigator!.pushNamed(page, arguments: args);
+  static Future<void> _goTo<T>(String page, {T? args}) =>
+      _currentNavigator!.pushNamed(page, arguments: args);
 
-  static T _getArgs<T extends Object?>(BuildContext context) => ModalRoute.of(context)!.settings.arguments as T;
+  static T _getArgs<T extends Object?>(BuildContext context) =>
+      ModalRoute.of(context)!.settings.arguments as T;
 }
 
 class RepoDetailArgs {
@@ -256,7 +349,10 @@ class RepoDetailArgs {
 
   @override
   int get hashCode {
-    return projectName.hashCode ^ repositoryName.hashCode ^ filePath.hashCode ^ branch.hashCode;
+    return projectName.hashCode ^
+        repositoryName.hashCode ^
+        filePath.hashCode ^
+        branch.hashCode;
   }
 
   @override

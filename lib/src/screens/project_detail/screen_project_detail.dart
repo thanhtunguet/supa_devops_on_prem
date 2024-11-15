@@ -19,7 +19,8 @@ class _ProjectDetailScreen extends StatelessWidget {
           child: ValueListenableBuilder(
             valueListenable: ctrl.project,
             builder: (_, project, __) =>
-                project?.data?.project.defaultTeam?.id != null && ctrl.apiService.organization.isNotEmpty
+                project?.data?.project.defaultTeam?.id != null &&
+                        ctrl.apiService.organization.isNotEmpty
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(100),
                         child: CachedNetworkImage(
@@ -68,7 +69,8 @@ class _ProjectDetailScreen extends StatelessWidget {
                           .map(
                             (m) => Container(
                               width: parameters.memberAvatarSize + 15,
-                              margin: const EdgeInsets.only(right: 12, bottom: 12),
+                              margin:
+                                  const EdgeInsets.only(right: 12, bottom: 12),
                               child: Column(
                                 children: [
                                   MemberAvatar(
@@ -163,19 +165,28 @@ class _ProjectDetailScreen extends StatelessWidget {
                 final gitMetrics = detail.gitmetrics;
                 final workMetrics = detail.workMetrics;
                 final pipelinesMetrics = detail.pipelinesMetrics;
-                final pipeSuccess = pipelinesMetrics?.total == null || pipelinesMetrics!.total <= 0
+                final pipeSuccess = pipelinesMetrics?.total == null ||
+                        pipelinesMetrics!.total <= 0
                     ? 0
-                    : (pipelinesMetrics.successful / pipelinesMetrics.total) * 100;
+                    : (pipelinesMetrics.successful / pipelinesMetrics.total) *
+                        100;
                 final pipeSuccessStr =
                     '${pipeSuccess.toInt() == pipeSuccess ? pipeSuccess.round() : pipeSuccess.toStringAsFixed(1)}%';
 
-                final hasWorkStats = workMetrics?.workItemsCreated != null && workMetrics!.workItemsCreated > 0;
-                final hasGitStats = gitMetrics?.commitsPushedCount != null && gitMetrics!.commitsPushedCount > 0;
+                final hasWorkStats = workMetrics?.workItemsCreated != null &&
+                    workMetrics!.workItemsCreated > 0;
+                final hasGitStats = gitMetrics?.commitsPushedCount != null &&
+                    gitMetrics!.commitsPushedCount > 0;
                 final hasPRStats =
-                    gitMetrics?.pullRequestsCreatedCount != null && gitMetrics!.pullRequestsCreatedCount > 0;
-                final hasPipelinesStats = pipelinesMetrics?.total != null && pipelinesMetrics!.total > 0;
+                    gitMetrics?.pullRequestsCreatedCount != null &&
+                        gitMetrics!.pullRequestsCreatedCount > 0;
+                final hasPipelinesStats = pipelinesMetrics?.total != null &&
+                    pipelinesMetrics!.total > 0;
 
-                if (!hasWorkStats && !hasGitStats && !hasPRStats && !hasPipelinesStats) {
+                if (!hasWorkStats &&
+                    !hasGitStats &&
+                    !hasPRStats &&
+                    !hasPipelinesStats) {
                   return const SizedBox();
                 }
 
@@ -287,8 +298,11 @@ class _ProjectDetailScreen extends StatelessWidget {
               ...ctrl.repos.map(
                 (r) => NavigationButton(
                   onTap: () => ctrl.goToRepoDetail(r),
-                  margin: r == ctrl.repos.first ? EdgeInsets.zero : const EdgeInsets.only(top: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  margin: r == ctrl.repos.first
+                      ? EdgeInsets.zero
+                      : const EdgeInsets.only(top: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
