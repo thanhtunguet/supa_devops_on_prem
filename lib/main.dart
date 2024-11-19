@@ -11,17 +11,22 @@ import 'package:flutter/services.dart';
 import 'package:purple_theme/purple_theme.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-const useFirebase = bool.fromEnvironment('FIREBASE');
+const useFirebase = true;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (useFirebase) await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (useFirebase) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await StorageServiceCore().init();
 
-  PurpleThemeHandler().init(defaultTheme: AppTheme.darkTheme, allThemes: AppTheme.allThemes);
+  PurpleThemeHandler()
+      .init(defaultTheme: AppTheme.darkTheme, allThemes: AppTheme.allThemes);
 
   const sentryDns = String.fromEnvironment('SENTRY_DNS');
 

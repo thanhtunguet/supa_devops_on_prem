@@ -61,8 +61,8 @@ class _SettingsController with ShareMixin, AppLogger {
     AppRouter.goToChooseProjects(removeRoutes: false);
   }
 
-  void openPurplesoftWebsite(FollowLink? link) {
-    logInfo('Open Purplesoft website');
+  void openSupavnWebsite(FollowLink? link) {
+    logInfo('Open Supavn website');
 
     link?.call();
   }

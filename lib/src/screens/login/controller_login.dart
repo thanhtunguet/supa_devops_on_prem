@@ -31,9 +31,13 @@ class _LoginController with AppLogger {
   Future<void> _loginAndNavigate(String token, {required bool isPat}) async {
     final isLogged = await apiService.login(token);
 
-    final isFailed = [LoginStatus.failed, LoginStatus.unauthorized].contains(isLogged);
+    final isFailed =
+        [LoginStatus.failed, LoginStatus.unauthorized].contains(isLogged);
 
-    logAnalytics('signin_with_${isPat ? 'pat' : 'microsoft'}_${isFailed ? 'failed' : 'success'}', {});
+    logAnalytics(
+      'signin_with_${isPat ? 'pat' : 'microsoft'}_${isFailed ? 'failed' : 'success'}',
+      {},
+    );
 
     if (isLogged == LoginStatus.failed) {
       _showLoginErrorAlert();
@@ -114,8 +118,8 @@ class _LoginController with AppLogger {
     return true;
   }
 
-  void openPurplesoftWebsite(FollowLink? link) {
-    logInfo('Open Purplesoft website');
+  void openSupavnWebsite(FollowLink? link) {
+    logInfo('Open Supavn website');
 
     link?.call();
   }

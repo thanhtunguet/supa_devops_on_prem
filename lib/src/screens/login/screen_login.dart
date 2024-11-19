@@ -10,10 +10,11 @@ class _LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, _) => AppRouter.askBeforeClosingApp(didPop: didPop),
+      onPopInvokedWithResult: (didPop, _) =>
+          AppRouter.askBeforeClosingApp(didPop: didPop),
       child: AppPage(
         init: () async => true,
-        title: 'Az DevOps',
+        title: 'Supa Devops',
         builder: (_) => Column(
           children: [
             Text(
@@ -65,7 +66,9 @@ class _LoginScreen extends StatelessWidget {
                           children: [
                             Text(
                               'How to create a PAT?',
-                              style: context.textTheme.titleSmall!.copyWith(decoration: TextDecoration.underline),
+                              style: context.textTheme.titleSmall!.copyWith(
+                                decoration: TextDecoration.underline,
+                              ),
                             ),
                           ],
                         ),
@@ -109,7 +112,9 @@ class _LoginScreen extends StatelessWidget {
               height: 100,
             ),
             Link(
-              uri: Uri.parse('https://github.com/PurpleSoftSrl/azure_devops_app'),
+              uri: Uri.parse(
+                'https://github.com/thanhtunguet/supa_devops_on_prem',
+              ),
               builder: (_, link) => InkWell(
                 onTap: link,
                 child: Text.rich(
@@ -117,7 +122,7 @@ class _LoginScreen extends StatelessWidget {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: 'Check out Az DevOps ',
+                        text: 'Check out Supa Devops ',
                         style: context.textTheme.bodyMedium!.copyWith(
                           fontWeight: FontWeight.w500,
                           fontFamily: AppTheme.defaultFont,
@@ -125,7 +130,8 @@ class _LoginScreen extends StatelessWidget {
                       ),
                       TextSpan(
                         text: 'GitHub repository',
-                        style: context.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
+                        style: context.textTheme.bodyMedium!
+                            .copyWith(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -137,10 +143,10 @@ class _LoginScreen extends StatelessWidget {
             ),
             Link(
               uri: Uri.parse(
-                'https://www.purplesoft.io?utm_source=azdevops_app&utm_medium=app&utm_campaign=azdevops',
+                'https://supa.vn/?utm_source=azdevops_app&utm_medium=app&utm_campaign=azdevops',
               ),
               builder: (_, link) => InkWell(
-                onTap: () => ctrl.openPurplesoftWebsite(link),
+                onTap: () => ctrl.openSupavnWebsite(link),
                 child: Text.rich(
                   textAlign: TextAlign.center,
                   TextSpan(
@@ -153,8 +159,9 @@ class _LoginScreen extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: 'PurpleSoft Srl',
-                        style: context.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
+                        text: 'Supavn',
+                        style: context.textTheme.bodyMedium!
+                            .copyWith(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),

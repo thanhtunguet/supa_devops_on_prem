@@ -6,10 +6,7 @@
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <application
-        android:label="Az DevOps"
-        android:name=".MainApplication"
-        android:icon="@mipmap/ic_launcher">
+    <application android:name=".MainApplication">
 
         <activity
             android:name="vn.com.goldsunfocusmedia.focus.MainActivity"

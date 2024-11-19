@@ -30,7 +30,8 @@ class _SettingsScreen extends StatelessWidget {
               children: [
                 Text(
                   'Git username',
-                  style: context.textTheme.titleSmall!.copyWith(color: context.colorScheme.onSecondary),
+                  style: context.textTheme.titleSmall!
+                      .copyWith(color: context.colorScheme.onSecondary),
                 ),
                 const SizedBox(
                   height: 10,
@@ -114,7 +115,9 @@ class _SettingsScreen extends StatelessWidget {
           ),
           NavigationButton(
             child: Link(
-              uri: Uri.parse('https://github.com/PurpleSoftSrl/azure_devops_app'),
+              uri: Uri.parse(
+                'https://github.com/thanhtunguet/supa_devops_on_prem',
+              ),
               builder: (_, link) => InkWell(
                 onTap: link,
                 child: Row(
@@ -133,14 +136,14 @@ class _SettingsScreen extends StatelessWidget {
           NavigationButton(
             child: Link(
               uri: Uri.parse(
-                'https://www.purplesoft.io?utm_source=azdevops_app&utm_medium=app&utm_campaign=azdevops',
+                'https://supa.vn/?utm_source=azdevops_app&utm_medium=app&utm_campaign=azdevops',
               ),
               builder: (_, link) => InkWell(
-                onTap: () => ctrl.openPurplesoftWebsite(link),
+                onTap: () => ctrl.openSupavnWebsite(link),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
-                    Text('Made with \u2764 by PurpleSoft Srl'),
+                    Text('Made with \u2764 by Supavn'),
                     Icon(DevOpsIcons.link),
                   ],
                 ),
@@ -204,7 +207,8 @@ class _SettingsScreen extends StatelessWidget {
           ),
           Text(
             'Version ${ctrl.appVersion}',
-            style: context.textTheme.titleSmall!.copyWith(color: context.colorScheme.onSecondary),
+            style: context.textTheme.titleSmall!
+                .copyWith(color: context.colorScheme.onSecondary),
           ),
         ],
       ),
