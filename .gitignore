@@ -3,7 +3,7 @@
 .dart_tool/
 .packages
 build/
-pubspec.lock  # Except for application packages
+pubspec.lock # Except for application packages
 
 doc/api/
 
@@ -31,3 +31,5 @@ lib/firebase_options_private.dart
 dart-define-debug.json
 dart-define-production.json
 dart-define-production-local.json
+
+android/app/release/
