@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:azure_devops/src/models/project.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
 
 abstract class StorageService {
   String getOrganization();
@@ -85,7 +85,8 @@ class StorageServiceCore implements StorageService {
   @override
   Iterable<Project> getChosenProjects() {
     final strings = _helper.getStringList(_Keys.chosenProjects) ?? [];
-    return strings.map((p) => Project.fromJson(jsonDecode(p) as Map<String, dynamic>));
+    return strings
+        .map((p) => Project.fromJson(jsonDecode(p) as Map<String, dynamic>));
   }
 
   @override
@@ -156,7 +157,10 @@ class StorageServiceCore implements StorageService {
     final savedFilters = getFilters();
 
     final attributeFilters = savedFilters.firstWhereOrNull(
-      (f) => f.organization == organization && f.area == area && f.attribute == attribute,
+      (f) =>
+          f.organization == organization &&
+          f.area == area &&
+          f.attribute == attribute,
     );
     final hasAttributeFilters = attributeFilters != null;
     if (hasAttributeFilters) {
@@ -200,15 +204,26 @@ class StorageServiceCore implements StorageService {
   }
 
   @override
-  void saveShortcut(String organization, String area, String label, Map<String, Set<String>> filtersWithAttribute) {
+  void saveShortcut(
+    String organization,
+    String area,
+    String label,
+    Map<String, Set<String>> filtersWithAttribute,
+  ) {
     final savedShortcuts = getSavedShortcuts();
 
     final shortcutWithLabel = savedShortcuts.firstWhereOrNull(
-      (f) => f.organization == organization && f.area == area && f.label == label,
+      (f) =>
+          f.organization == organization && f.area == area && f.label == label,
     );
 
     final mappedFilters = filtersWithAttribute.entries.map(
-      (entry) => StorageFilter(organization: organization, area: area, attribute: entry.key, filters: entry.value),
+      (entry) => StorageFilter(
+        organization: organization,
+        area: area,
+        attribute: entry.key,
+        filters: entry.value,
+      ),
     );
 
     final hasShortcutWithLabel = shortcutWithLabel != null;
@@ -238,7 +253,10 @@ class StorageServiceCore implements StorageService {
 
     final editedShortcuts = savedShortcuts
       ..firstWhereOrNull(
-        (f) => f.organization == shortcut.organization && f.area == shortcut.area && f.label == shortcut.label,
+        (f) =>
+            f.organization == shortcut.organization &&
+            f.area == shortcut.area &&
+            f.label == shortcut.label,
       )?.label = newLabel;
 
     _helper.setStringList(
@@ -252,7 +270,8 @@ class StorageServiceCore implements StorageService {
     final savedShortcuts = getSavedShortcuts();
 
     final otherShortcuts = savedShortcuts.whereNot(
-      (f) => f.organization == shortcut.organization && f.label == shortcut.label,
+      (f) =>
+          f.organization == shortcut.organization && f.label == shortcut.label,
     );
 
     _helper.setStringList(
@@ -275,51 +294,51 @@ class _StorageServiceHelper {
     instance = null;
   }
 
-  static SharedPreferences? _instance;
+  static Box<dynamic>? _instance;
 
   Future<void> init() async {
     _StorageServiceHelper();
-    _instance = await SharedPreferences.getInstance();
+    _instance = await Hive.openBox('azure-devops-supa');
   }
 
   void setString(String key, String value) {
     _assertIsInitialized();
-    _instance!.setString(key, value);
+    _instance!.put(key, value);
   }
 
   String? getString(String key) {
     _assertIsInitialized();
-    return _instance!.getString(key);
+    return _instance!.get(key) as String?;
   }
 
   void setInt(String key, int value) {
     _assertIsInitialized();
-    _instance!.setInt(key, value);
+    _instance!.put(key, value);
   }
 
   int? getInt(String key) {
     _assertIsInitialized();
-    return _instance!.getInt(key);
+    return _instance!.get(key) as int?;
   }
 
   void setStringList(String key, List<String> value) {
     _assertIsInitialized();
-    _instance!.setStringList(key, value);
+    _instance!.put(key, value);
   }
 
   List<String>? getStringList(String key) {
     _assertIsInitialized();
-    return _instance!.getStringList(key);
+    return _instance!.get(key) as List<String>?;
   }
 
   Set<String> getKeys() {
     _assertIsInitialized();
-    return _instance!.getKeys();
+    return _instance!.keys.toSet() as Set<String>;
   }
 
   void remove(String key) {
     _assertIsInitialized();
-    _instance!.remove(key);
+    _instance!.delete(key);
   }
 
   void clear() {
@@ -328,7 +347,10 @@ class _StorageServiceHelper {
   }
 
   void _assertIsInitialized() {
-    assert(_instance != null, 'Storage service must be initialized calling init()');
+    assert(
+      _instance != null,
+      'Storage service must be initialized calling init()',
+    );
   }
 }
 
@@ -343,12 +365,17 @@ class _Keys {
 }
 
 class StorageServiceInherited extends InheritedWidget {
-  const StorageServiceInherited({super.key, required this.storageService, required super.child});
+  const StorageServiceInherited({
+    super.key,
+    required this.storageService,
+    required super.child,
+  });
 
   final StorageService storageService;
 
   static StorageServiceInherited of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<StorageServiceInherited>()!;
+    return context
+        .dependOnInheritedWidgetOfExactType<StorageServiceInherited>()!;
   }
 
   @override
@@ -377,7 +404,8 @@ class StorageFilter {
     );
   }
 
-  factory StorageFilter.fromJson(String source) => StorageFilter.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory StorageFilter.fromJson(String source) =>
+      StorageFilter.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final String organization;
   final String area;
@@ -425,11 +453,16 @@ class SavedShortcut {
       organization: map['organization'] as String,
       area: map['area'] as String,
       label: map['label'] as String,
-      filters: StorageFilter.listFromJson(jsonEncode(map['filters']), growable: true) ?? [],
+      filters: StorageFilter.listFromJson(
+            jsonEncode(map['filters']),
+            growable: true,
+          ) ??
+          [],
     );
   }
 
-  factory SavedShortcut.fromJson(String source) => SavedShortcut.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory SavedShortcut.fromJson(String source) =>
+      SavedShortcut.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final String organization;
   final String area;
