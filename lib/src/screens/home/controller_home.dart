@@ -35,8 +35,10 @@ class _HomeController with AppLogger {
 
     final alreadyChosenProjects = storageService.getChosenProjects();
 
-    final existentProjects = alreadyChosenProjects.where((p) => allProjects.map((e) => e.id!).contains(p.id));
-    final sortedProjects = existentProjects.toList()..sort((a, b) => b.lastUpdateTime!.compareTo(a.lastUpdateTime!));
+    final existentProjects = alreadyChosenProjects
+        .where((p) => allProjects.map((e) => e.id!).contains(p.id));
+    final sortedProjects = existentProjects.toList()
+      ..sort((a, b) => b.lastUpdateTime!.compareTo(a.lastUpdateTime!));
 
     _projectsCount = existentProjects.length;
 
@@ -84,7 +86,9 @@ class _HomeController with AppLogger {
       case FilterAreas.commits:
         AppRouter.goToCommits(shortcut: shortcut);
       case FilterAreas.pipelines:
-        AppRouter.goToPipelines(args: (definition: null, project: null, shortcut: shortcut));
+        AppRouter.goToPipelines(
+          args: (definition: null, project: null, shortcut: shortcut),
+        );
       case FilterAreas.workItems:
         AppRouter.goToWorkItems(args: (project: null, shortcut: shortcut));
       case FilterAreas.pullRequests:
@@ -101,12 +105,6 @@ class _HomeController with AppLogger {
       await sc.setUser(SentryUser(id: userId, email: email));
       await sc.setTag('org', org);
     });
-
-    if (useFirebase) {
-      FirebaseAnalytics.instance.setUserId(id: email);
-      FirebaseAnalytics.instance.setUserProperty(name: 'email', value: email);
-      FirebaseAnalytics.instance.setUserProperty(name: 'org', value: org);
-    }
   }
 
   /// Shows review dialog only the 5th time the app is opened.
@@ -133,7 +131,9 @@ class _HomeController with AppLogger {
   void searchProjects(String query) {
     final trimmedQuery = query.trim().toLowerCase();
 
-    final matchedProjects = allProjects.where((p) => p.name.toString().toLowerCase().contains(trimmedQuery)).toList();
+    final matchedProjects = allProjects
+        .where((p) => p.name.toString().toLowerCase().contains(trimmedQuery))
+        .toList();
 
     projects.value = projects.value?.copyWith(data: matchedProjects);
   }

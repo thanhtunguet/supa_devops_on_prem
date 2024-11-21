@@ -23,7 +23,11 @@ class _TabsScreen extends StatelessWidget {
               inactiveColor: context.colorScheme.onSecondary.withOpacity(.4),
               key: ctrl.tabKey,
               onTap: ctrl.goToTab,
-              border: Border(top: BorderSide(color: context.colorScheme.secondaryContainer)),
+              border: Border(
+                top: BorderSide(
+                  color: context.colorScheme.secondaryContainer,
+                ),
+              ),
               height: parameters.tabBarHeight,
               items: ctrl.navPages
                   .map(
@@ -46,14 +50,9 @@ class _TabsScreen extends StatelessWidget {
               navigatorKey: ctrl.navPages[i].key,
               navigatorObservers: [
                 SentryNavigatorObserver(
-                  routeNameExtractor: (settings) => ctrl.getRouteSettingsName(settings, i),
+                  routeNameExtractor: (settings) =>
+                      ctrl.getRouteSettingsName(settings, i),
                 ),
-                if (useFirebase)
-                  FirebaseAnalyticsObserver(
-                    analytics: FirebaseAnalytics.instance,
-                    nameExtractor: (settings) => ctrl.getRouteName(settings, i),
-                    routeFilter: (route) => route?.settings.name != null && route!.settings.name != '/',
-                  ),
               ],
               onGenerateRoute: (route) => MaterialPageRoute(
                 builder: (_) => route.name == '/'
