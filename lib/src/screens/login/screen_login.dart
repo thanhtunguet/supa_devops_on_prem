@@ -104,13 +104,6 @@ class _LoginScreen extends StatelessWidget {
             const SizedBox(
               height: 50,
             ),
-            LoadingButton(
-              onPressed: ctrl.loginWithMicrosoft,
-              text: 'Sign in with Microsoft',
-            ),
-            const SizedBox(
-              height: 100,
-            ),
             Link(
               uri: Uri.parse(
                 'https://github.com/thanhtunguet/supa_devops_on_prem',
