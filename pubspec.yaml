@@ -1,5 +1,5 @@
 name: "azure_devops"
-version: 2.5.3+02050303
+version: 2.5.4+02050401
 description: "Azure DevOps unofficial mobile app"
 homepage: "homepage"
 publish_to: "none"

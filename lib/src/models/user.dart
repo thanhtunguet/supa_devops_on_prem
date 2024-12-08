@@ -127,7 +127,7 @@ class UserMe {
   factory UserMe.fromJson(Map<String, dynamic> json) => UserMe(
         displayName: json['identity']['DisplayName'] as String?,
         publicAlias: json['identity']['AccountName'] as String?,
-        emailAddress: json['userPreferences']['PreferredEmail'] as String,
+        emailAddress: json['identity']['AccountName'] as String,
         coreRevision: json['coreRevision'] as int?,
         timeStamp: json['timeStamp'] == null
             ? null
