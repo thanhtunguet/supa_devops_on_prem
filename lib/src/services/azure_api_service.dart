@@ -383,7 +383,7 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
 
   String get _usersBasePath => 'https://devops.supa.vn:7443';
 
-  String get _apiVersion => 'api-version=7.0';
+  String get _apiVersion => 'api-version=7.1';
 
   @override
   List<GraphUser> get allUsers => _allUsers;
@@ -2388,14 +2388,17 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   }) async {
     if (_allUsers.isEmpty) await _getUsers();
 
-    final user = _allUsers.firstWhereOrNull((u) => u.descriptor == descriptor);
-    if (user == null) {
-      return ApiResponse.error(
-        Response('', 404, reasonPhrase: 'User not found'),
-      );
-    }
+    final userRes = await _get(
+      '$_usersBasePath/$_organization/_apis/graph/descriptors/$descriptor?$_apiVersion',
+    );
 
-    return ApiResponse.ok(user);
+    if (userRes.isError) return ApiResponse.error(userRes);
+
+    final jsonMap = jsonDecode(userRes.body) as Map<String, dynamic>;
+
+    return ApiResponse.ok(
+      GraphUser.fromApiJson(jsonMap),
+    );
   }
 
   @override
@@ -2423,14 +2426,15 @@ class AzureApiServiceImpl with AppLogger implements AzureApiService {
   }
 
   Future<ApiResponse<List<GraphUser>>> _getUsers() async {
-    // final usersRes = await _get(
-    //   '$_usersBasePath/$_organization/_apis/graph/users?api-version=7.1-preview.1',
-    // );
+    final usersRes = await _get(
+      '$_usersBasePath/$_organization/7bead6c8-1e52-459c-bb95-a8345a729ee0/_api/_identity/ReadGroupMembers?__v=5&scope=47c96053-f45b-4862-813c-c0455c161249&readMembers=true&scopedMembershipQuery=1',
+    );
 
-    // if (usersRes.isError) return ApiResponse.error(usersRes);
+    if (usersRes.isError) return ApiResponse.error(usersRes);
 
-    /// TODO: get users from apis
-    _allUsers = [];
+    _allUsers = (jsonDecode(usersRes.body)['identities'] as List<dynamic>)
+        .map((user) => GraphUser.fromApiJson(user as Map<String, dynamic>))
+        .toList();
 
     return ApiResponse.ok(_allUsers);
   }

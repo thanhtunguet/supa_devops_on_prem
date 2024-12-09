@@ -76,6 +76,7 @@ class _ProjectDetailScreen extends StatelessWidget {
                                   MemberAvatar(
                                     userDescriptor: m.identity!.descriptor,
                                     radius: parameters.memberAvatarSize,
+                                    imageUrl: m.identity?.imageUrl,
                                   ),
                                   const SizedBox(
                                     height: 5,

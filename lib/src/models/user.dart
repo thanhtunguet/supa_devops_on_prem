@@ -64,6 +64,19 @@ class GraphUser {
         directoryAlias: json['directoryAlias'] as String?,
       );
 
+  factory GraphUser.fromApiJson(Map<String, dynamic> json) => GraphUser(
+        domain: json['Domain'] as String?,
+        mailAddress: json['MailAddress'] as String?,
+        displayName: json['DisplayName'] as String?,
+        descriptor: json['EntityId'] as String?,
+        metaType: json['IdentityType'] as String?,
+        principalName: json['AccountName'] as String?,
+        directoryAlias: json['SubHeader'] as String?,
+        originId: json['TeamFoundationId'] as String?,
+        url:
+            'https://devops.supa.vn:7443/DefaultCollection/7bead6c8-1e52-459c-bb95-a8345a729ee0/_api/_common/GetDdsAvatar?id=${json['EntityId']}&__v=5',
+      );
+
   final String? subjectKind;
   final String? domain;
   final String? principalName;
